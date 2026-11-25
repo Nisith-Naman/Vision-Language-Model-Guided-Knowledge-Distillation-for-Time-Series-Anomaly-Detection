@@ -1,0 +1,91 @@
+{
+  "render_style": "heatmap",
+  "views": [
+    "heatmap",
+    "spectrogram"
+  ],
+  "train_windows_scored": 5340,
+  "train_windows_total": 5340,
+  "teacher_version": "v2.1: block-interleaved cross-fitting; CoOp prompts; heatmap+spectrogram views",
+  "teachers": {
+    "probe": {
+      "C": 0.03,
+      "cv_auprc": {
+        "0.003": 0.4140002713253549,
+        "0.01": 0.44838001451224185,
+        "0.03": 0.4620957609819753,
+        "0.1": 0.46100547983894646,
+        "0.3": 0.4461412269350372,
+        "1.0": 0.42418825602103005
+      }
+    },
+    "probe_mv": {
+      "C": 0.03,
+      "cv_auprc": {
+        "0.003": 0.4371642385981378,
+        "0.01": 0.45630210463652343,
+        "0.03": 0.4621245447047997,
+        "0.1": 0.4471152590764239,
+        "0.3": 0.42219453865440726,
+        "1.0": 0.3889981669198074
+      }
+    },
+    "coop": {
+      "final_train_loss": 0.26830946157934066,
+      "views": [
+        "heatmap"
+      ],
+      "nearest_words": [
+        "a",
+        "heat",
+        "map",
+        "of",
+        "a",
+        "mul",
+        "tiv",
+        "ari",
+        "ate",
+        "sensor",
+        "time",
+        "series",
+        "that",
+        "looks"
+      ]
+    },
+    "coop_mv": {
+      "final_train_loss": 0.2834583943256278,
+      "views": [
+        "heatmap",
+        "spectrogram"
+      ],
+      "nearest_words": [
+        "a",
+        "heat",
+        "map",
+        "of",
+        "a",
+        "mul",
+        "tiv",
+        "ari",
+        "ate",
+        "sensor",
+        "time",
+        "series",
+        "that",
+        "looks"
+      ]
+    }
+  },
+  "train_oof_window_auprc": {
+    "zeroshot": 0.11801804865683985,
+    "probe": 0.4620957609819753,
+    "probe_mv": 0.4621245447047997,
+    "coop": 0.33189502688400935,
+    "coop_mv": 0.32078658607168037
+  },
+  "train_oof_window_auprc_probe": 0.4620957609819753,
+  "train_window_auprc_zeroshot": 0.11801804865683985,
+  "train_window_prevalence": 0.09831460674157304,
+  "pos_weight": 21.763884457207237,
+  "downsample": 1
+}

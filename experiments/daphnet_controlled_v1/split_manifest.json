@@ -1,0 +1,64 @@
+{
+  "dataset": "Daphnet FoG",
+  "source_data_sha256": "009445394ede36923e4b854200c6baa67d3e4ca67ebca63a9bbdd4cfc882197a",
+  "processed_split_sha256": "d37c5f9d5b1f520f1ebb95f01104b78201d195892ae94206c033c4cb6be6f37b",
+  "split_method": "subject-disjoint stratified group split",
+  "split_seed": 42,
+  "train_fraction": 0.7,
+  "validation_fraction": 0.15,
+  "test_fraction": 0.15000000000000005,
+  "window_length": 256,
+  "stride": 64,
+  "scaler": "standard, fitted on training subjects only",
+  "imputation": "linear interpolation; train-derived fallback means",
+  "window_label_rule": "positive if any point label in the window is FoG",
+  "labels": "annotation 0 excluded; 1 normal; 2 freezing of gait anomaly",
+  "partitions": {
+    "train": {
+      "subjects": [
+        "S01",
+        "S03",
+        "S05",
+        "S06",
+        "S08",
+        "S09",
+        "S10"
+      ],
+      "recording_segments": 29,
+      "raw_timesteps": 814749,
+      "raw_anomaly_timesteps": 93963,
+      "raw_anomaly_prevalence": 0.11532754259287216,
+      "windows": 12672,
+      "anomalous_windows": 2165,
+      "window_prevalence": 0.17084911616161616,
+      "window_point_labels": 375915
+    },
+    "validation": {
+      "subjects": [
+        "S02"
+      ],
+      "recording_segments": 2,
+      "raw_timesteps": 90562,
+      "raw_anomaly_timesteps": 11609,
+      "raw_anomaly_prevalence": 0.12818842340054326,
+      "windows": 1411,
+      "anomalous_windows": 267,
+      "window_prevalence": 0.18922749822820695,
+      "window_point_labels": 46436
+    },
+    "test": {
+      "subjects": [
+        "S04",
+        "S07"
+      ],
+      "recording_segments": 4,
+      "raw_timesteps": 235524,
+      "raw_anomaly_timesteps": 5213,
+      "raw_anomaly_prevalence": 0.022133625447937365,
+      "windows": 3672,
+      "anomalous_windows": 176,
+      "window_prevalence": 0.04793028322440087,
+      "window_point_labels": 20852
+    }
+  }
+}

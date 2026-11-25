@@ -1,0 +1,30 @@
+dataset,mode,level,metric,value
+benchmark_daphnet,student_baseline,window,precision,0.14600840336134455
+benchmark_daphnet,student_baseline,window,recall,0.9413092550790068
+benchmark_daphnet,student_baseline,window,f1,0.25280387996362536
+benchmark_daphnet,student_baseline,window,auprc,0.12624091417400282
+benchmark_daphnet,student_baseline,window,roc_auc,0.6863156281622168
+benchmark_daphnet,student_baseline,window,confusion_matrix,"[[2201, 2439], [26, 417]]"
+benchmark_daphnet,student_baseline,window,threshold,0.40595959595959596
+benchmark_daphnet,student_baseline,window,n_true_anomalies,443
+benchmark_daphnet,student_baseline,window,n_predicted_anomalies,2856
+benchmark_daphnet,student_baseline,window,has_ground_truth,True
+benchmark_daphnet,student_baseline,window,warning,
+benchmark_daphnet,student_baseline,step,precision,0.07692307692307693
+benchmark_daphnet,student_baseline,step,recall,0.7484246819640946
+benchmark_daphnet,student_baseline,step,f1,0.13950756820246882
+benchmark_daphnet,student_baseline,step,auprc,0.075147318830533
+benchmark_daphnet,student_baseline,step,roc_auc,0.6690538471758284
+benchmark_daphnet,student_baseline,step,confusion_matrix,"[[158184, 151080], [4232, 12590]]"
+benchmark_daphnet,student_baseline,step,threshold,0.4257575757575757
+benchmark_daphnet,student_baseline,step,n_true_anomalies,16822
+benchmark_daphnet,student_baseline,step,n_predicted_anomalies,163670
+benchmark_daphnet,student_baseline,step,has_ground_truth,True
+benchmark_daphnet,student_baseline,step,warning,
+benchmark_daphnet,student_baseline,event,event_precision,0.11217128228996974
+benchmark_daphnet,student_baseline,event,event_recall,1.0
+benchmark_daphnet,student_baseline,event,event_f1,0.20171584013391924
+benchmark_daphnet,student_baseline,event,true_events,48.0
+benchmark_daphnet,student_baseline,event,predicted_events,4297.0
+benchmark_daphnet,student_baseline,threshold,window_threshold,0.40595959595959596
+benchmark_daphnet,student_baseline,threshold,step_threshold,0.4257575757575757

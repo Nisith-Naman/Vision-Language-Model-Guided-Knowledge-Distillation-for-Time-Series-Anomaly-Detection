@@ -1,0 +1,13 @@
+{
+  "model_name": "openai/clip-vit-base-patch32",
+  "render_style": "heatmap",
+  "render_clip": 4.0,
+  "localization": {
+    "alpha": 0.0,
+    "k": 6,
+    "threshold": 0.8577237699858171,
+    "min_len": 1
+  },
+  "probe_C": 0.01,
+  "note": "Threshold, smoothing and minimum event length were tuned on validation windows only."
+}

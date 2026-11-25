@@ -1,0 +1,28 @@
+{
+  "dataset": "daphnet",
+  "rule": "highest mean (over student variants and seeds) of best validation AUPRC; test not used",
+  "scores": {
+    "experiments/benchmark_v2": {
+      "mean": 0.8336013866037918,
+      "per_variant": {
+        "gru_gt": 0.8306598499637143,
+        "gru_kd_zeroshot": 0.8250159453725927,
+        "gru_kd_probe": 0.83884183785266,
+        "gru_kd_full": 0.8417026151515467,
+        "gru_teacher_only": 0.8317866846784453
+      }
+    },
+    "experiments/benchmark_v2_daphnet_tuned": {
+      "mean": 0.8299416130092269,
+      "per_variant": {
+        "gru_gt": 0.835338009060997,
+        "gru_kd_zeroshot": 0.8231218390512427,
+        "gru_kd_probe": 0.8361376845190316,
+        "gru_kd_full": 0.8333631728686965,
+        "gru_teacher_only": 0.8217473595461667
+      }
+    }
+  },
+  "selected": "experiments/benchmark_v2",
+  "decided_at": "2026-11-22T20:55:21"
+}

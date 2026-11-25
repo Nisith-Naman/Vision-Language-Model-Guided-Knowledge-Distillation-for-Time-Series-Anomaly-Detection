@@ -1,0 +1,84 @@
+{
+  "identity": {
+    "sha": "23b09b4c5e31c2f9e940c2abb0bbab90af53df8a8997f9648ca8e071c00de403",
+    "style": "heatmap",
+    "clip": 4.0,
+    "model": "openai/clip-vit-base-patch32",
+    "n_train": 8000,
+    "n_val": 4866,
+    "n_test": 3585,
+    "version": "v2.1: block-interleaved cross-fitting; CoOp prompts; heatmap+spectrogram views",
+    "folds": 5,
+    "block": 32,
+    "coop_epochs": 12
+  },
+  "info": {
+    "probe": {
+      "C": 0.1,
+      "cv_auprc": {
+        "0.003": 0.9609258194501489,
+        "0.01": 0.967337153459665,
+        "0.03": 0.9709413808103723,
+        "0.1": 0.9722702262622074,
+        "0.3": 0.971814651262346,
+        "1.0": 0.9718279568604238
+      }
+    },
+    "probe_mv": {
+      "C": 0.1,
+      "cv_auprc": {
+        "0.003": 0.9719991229848869,
+        "0.01": 0.9749796315651925,
+        "0.03": 0.9764341168623853,
+        "0.1": 0.9769647591254479,
+        "0.3": 0.9762455777886979,
+        "1.0": 0.9756523658749902
+      }
+    },
+    "coop": {
+      "final_train_loss": 0.2899014868736267,
+      "views": [
+        "heatmap"
+      ],
+      "nearest_words": [
+        "a",
+        "heat",
+        "map",
+        "of",
+        "a",
+        "mul",
+        "tiv",
+        "ari",
+        "ate",
+        "sensor",
+        "time",
+        "series",
+        "that",
+        "looks"
+      ]
+    },
+    "coop_mv": {
+      "final_train_loss": 0.28643418073654175,
+      "views": [
+        "heatmap",
+        "spectrogram"
+      ],
+      "nearest_words": [
+        "a",
+        "heat",
+        "map",
+        "of",
+        "a",
+        "mul",
+        "tiv",
+        "ari",
+        "ate",
+        "sensor",
+        "time",
+        "series",
+        "that",
+        "looks"
+      ]
+    }
+  }
+}

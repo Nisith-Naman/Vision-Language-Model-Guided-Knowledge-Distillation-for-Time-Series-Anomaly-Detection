@@ -1,0 +1,9 @@
+{
+  "dataset": "metropt",
+  "mode": "synthetic",
+  "seed": 0,
+  "length": 4320,
+  "events": 9,
+  "anomalous_fraction": 0.2875,
+  "window_length": 120
+}

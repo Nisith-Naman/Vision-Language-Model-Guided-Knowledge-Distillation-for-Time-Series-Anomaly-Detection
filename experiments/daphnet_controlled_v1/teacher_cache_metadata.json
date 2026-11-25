@@ -1,0 +1,15 @@
+{
+  "source_data_sha256": "009445394ede36923e4b854200c6baa67d3e4ca67ebca63a9bbdd4cfc882197a",
+  "processed_split_sha256": "d37c5f9d5b1f520f1ebb95f01104b78201d195892ae94206c033c4cb6be6f37b",
+  "teacher_model": "openai/clip-vit-base-patch32",
+  "normal_prompt": "A regular, smooth, stable multidimensional time-series sensor pattern without anomalies or spikes",
+  "anomaly_prompt": "An anomalous, irregular, erratic multidimensional time-series signal with sudden spikes or distortions",
+  "image_mode": "viridis heatmap; time x-axis; sensors y-axis; ground-truth labels excluded",
+  "visual_vmin": -94.98644256591797,
+  "visual_vmax": 108.666015625,
+  "teacher_budget": 1000,
+  "teacher_indices_sha256": "96437680571f2c6b00786f66c62ddc6690cab05d49a0463839bcda606b1d47ad",
+  "train_windows": 12672,
+  "validation_windows": 1411,
+  "test_windows": 3672
+}

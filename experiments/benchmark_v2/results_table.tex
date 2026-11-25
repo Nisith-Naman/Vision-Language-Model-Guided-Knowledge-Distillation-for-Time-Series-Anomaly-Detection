@@ -1,0 +1,37 @@
+\begin{tabular}{llccc}
+\toprule
+Dataset (test prev.) & Model & Window AUPRC & Point AUPRC & Event F1 \\
+\midrule
+Credit Card (0.074/0.001) & CLIP zero-shot (frozen) & 0.079 & 0.001 & 0.018 \\
+ & CLIP linear probe (frozen backbone) & 0.217 & 0.006 & 0.000 \\
+ & CLIP learned prompts, heatmap + spectrogram & 0.124 & 0.003 & 0.000 \\
+ & Gradient-boosted trees & 0.767 & 0.024 & 0.622 \\
+ & GRU, ground truth only & 0.823 $\pm$ 0.005 & 0.787 $\pm$ 0.010 & 0.799 $\pm$ 0.014 \\
+ & GRU + KD (soft labels + CLIP features) & 0.808 $\pm$ 0.010 & 0.783 $\pm$ 0.006 & 0.805 $\pm$ 0.017 \\
+ & GRU + KD (learned prompts, 2 views, confidence-weighted) & 0.801 $\pm$ 0.011 & 0.775 $\pm$ 0.004 & 0.792 $\pm$ 0.006 \\
+\midrule
+Daphnet FoG (0.048/0.022) & CLIP zero-shot (frozen) & 0.123 & 0.059 & 0.222 \\
+ & CLIP linear probe (frozen backbone) & 0.542 & 0.404 & 0.351 \\
+ & CLIP learned prompts, heatmap + spectrogram & 0.401 & 0.452 & 0.373 \\
+ & Gradient-boosted trees & 0.350 & 0.211 & 0.246 \\
+ & GRU, ground truth only & 0.627 $\pm$ 0.058 & 0.519 $\pm$ 0.062 & 0.345 $\pm$ 0.105 \\
+ & GRU + KD (soft labels + CLIP features) & 0.640 $\pm$ 0.110 & 0.523 $\pm$ 0.062 & 0.319 $\pm$ 0.071 \\
+ & GRU + KD (learned prompts, 2 views, confidence-weighted) & 0.592 $\pm$ 0.068 & 0.477 $\pm$ 0.031 & 0.252 $\pm$ 0.044 \\
+\midrule
+3W Oil (0.620/0.604) & CLIP zero-shot (frozen) & 0.771 & 0.769 & 0.745 \\
+ & CLIP linear probe (frozen backbone) & 0.992 & 0.982 & 0.971 \\
+ & CLIP learned prompts, heatmap + spectrogram & 0.971 & 0.960 & 0.912 \\
+ & Gradient-boosted trees & 0.998 & 0.992 & 1.000 \\
+ & GRU, ground truth only & 0.985 $\pm$ 0.003 & 0.978 $\pm$ 0.003 & 0.925 $\pm$ 0.039 \\
+ & GRU + KD (soft labels + CLIP features) & 0.980 $\pm$ 0.004 & 0.976 $\pm$ 0.004 & 0.875 $\pm$ 0.109 \\
+ & GRU + KD (learned prompts, 2 views, confidence-weighted) & 0.978 $\pm$ 0.004 & 0.978 $\pm$ 0.002 & 0.943 $\pm$ 0.009 \\
+\midrule
+MetroPT-3 (0.062/0.063) & CLIP zero-shot (frozen) & 0.037 & 0.039 & 0.000 \\
+ & CLIP linear probe (frozen backbone) & 0.931 & 0.942 & 0.889 \\
+ & CLIP learned prompts, heatmap + spectrogram & 0.998 & 0.999 & 0.857 \\
+ & Gradient-boosted trees & 0.702 & 0.692 & 0.800 \\
+ & GRU, ground truth only & 0.751 $\pm$ 0.137 & 0.524 $\pm$ 0.251 & 0.250 $\pm$ 0.433 \\
+ & GRU + KD (soft labels + CLIP features) & 0.865 $\pm$ 0.021 & 0.870 $\pm$ 0.010 & 0.750 \\
+ & GRU + KD (learned prompts, 2 views, confidence-weighted) & 0.876 $\pm$ 0.015 & 0.889 $\pm$ 0.006 & 0.722 $\pm$ 0.048 \\
+\bottomrule
+\end{tabular}

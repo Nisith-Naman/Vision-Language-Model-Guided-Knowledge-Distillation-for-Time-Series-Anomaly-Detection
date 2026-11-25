@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+\begin{axis}[
+  ybar=1.5pt,
+  bar width=5pt,
+  width=0.98\linewidth,
+  height=5.2cm,
+  ymin=0, ymax=1.05,
+  ylabel={Score},
+  symbolic x coords={AirQ,Credit,DaphnetKD,DaphnetBase},
+  xtick=data,
+  xticklabels={{Air Quality\\synthetic},{Credit\\Card},{Daphnet\\KD},{Daphnet\\supervised}},
+  x tick label style={font=\scriptsize,align=center},
+  ytick={0,0.2,...,1.0},
+  yticklabel style={font=\scriptsize},
+  ylabel style={font=\small},
+  legend style={font=\scriptsize, at={(0.5,1.02)},anchor=south,legend columns=3,draw=none},
+  enlarge x limits=0.16,
+  grid=major,
+  major grid style={gray!20},
+  nodes near coords=false,
+  every axis plot/.append style={draw=none}
+]
+\addplot[fill=blue!65] coordinates {(AirQ,0.7956) (Credit,0.4621) (DaphnetKD,0.0450) (DaphnetBase,0.1395)};
+\addlegendentry{Point F1}
+\addplot[fill=orange!75] coordinates {(AirQ,0.8631) (Credit,0.7871) (DaphnetKD,0.0560) (DaphnetBase,0.0751)};
+\addlegendentry{Average precision}
+\addplot[fill=green!55!black] coordinates {(AirQ,0.9478) (Credit,0.9768) (DaphnetKD,0.8141) (DaphnetBase,0.6691)};
+\addlegendentry{ROC-AUC}
+\end{axis}
+\end{tikzpicture}

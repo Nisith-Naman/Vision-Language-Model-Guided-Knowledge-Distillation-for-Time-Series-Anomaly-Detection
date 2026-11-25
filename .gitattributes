@@ -1,0 +1,11 @@
+# Normalise text line endings; never touch binary files.
+* text=auto
+*.pdf    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.npz    binary
+*.npy    binary
+*.pt     binary
+*.joblib binary
+*.zip    binary

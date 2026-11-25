@@ -1,0 +1,9 @@
+{
+  "sha": "4b494b516a498e3c73cfef51bb4d391908cb9d0c18666903e62323114ba48bc3",
+  "style": "spectrogram",
+  "clip": 4.0,
+  "model": "openai/clip-vit-base-patch32",
+  "n_train": 6597,
+  "n_val": 1251,
+  "n_test": 1685
+}

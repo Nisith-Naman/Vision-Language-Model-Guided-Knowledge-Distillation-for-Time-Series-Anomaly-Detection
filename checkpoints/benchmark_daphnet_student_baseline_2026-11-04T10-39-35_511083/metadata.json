@@ -1,0 +1,93 @@
+{
+  "model_config": {
+    "input_size": 9,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "dropout": 0.3,
+    "seq_len": 256,
+    "bidirectional": false
+  },
+  "feature_names": [
+    "ankle_x",
+    "ankle_y",
+    "ankle_z",
+    "thigh_x",
+    "thigh_y",
+    "thigh_z",
+    "trunk_x",
+    "trunk_y",
+    "trunk_z"
+  ],
+  "scaler_type": "standard",
+  "window_length": 256,
+  "stride": 64,
+  "threshold": 0.5,
+  "normal_label": "0",
+  "anomaly_label": "1",
+  "training_mode": "student_baseline",
+  "dataset_name": "benchmark_daphnet",
+  "training_result": {
+    "train_losses": [
+      1.7924868166446686,
+      1.6768344044685364,
+      1.6218703985214233,
+      1.5662921369075775,
+      1.5181770324707031,
+      1.4747816324234009
+    ],
+    "val_losses": [
+      3.030414511760076,
+      3.0422058353821435,
+      3.067312409480413,
+      3.1266965170701346,
+      3.181158641974131,
+      3.2761279741923013
+    ],
+    "loc_losses": [
+      1.0759165436029434,
+      0.9817626476287842,
+      0.9448444843292236,
+      0.9614492505788803,
+      0.8992410600185394,
+      0.9063596576452255
+    ],
+    "window_losses": [
+      0.7165703028440475,
+      0.6950717866420746,
+      0.6770259439945221,
+      0.6048428863286972,
+      0.6189359426498413,
+      0.5684219673275948
+    ],
+    "kd_losses": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "best_epoch": 1,
+    "best_val_loss": 3.030414511760076,
+    "training_time_seconds": 18.99128007888794
+  },
+  "created_at": "2026-11-04T10:39:35.511083",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {
+    "col_means": [
+      -91.7877197265625,
+      987.31787109375,
+      262.8009948730469,
+      -32.825164794921875,
+      729.93408203125,
+      142.1908416748047,
+      60.512088775634766,
+      945.07177734375,
+      24.698118209838867
+    ]
+  },
+  "time_column": "timestamp",
+  "missing_codes": [],
+  "contextual_threshold_robust_z": 9.285351753234863,
+  "contextual_calibration_normal_rows": 20000
+}

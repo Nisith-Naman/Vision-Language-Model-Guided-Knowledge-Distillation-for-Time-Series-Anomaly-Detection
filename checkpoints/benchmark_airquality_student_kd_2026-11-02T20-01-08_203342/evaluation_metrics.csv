@@ -1,0 +1,30 @@
+dataset,mode,level,metric,value
+benchmark_airquality,student_kd,window,precision,1.0
+benchmark_airquality,student_kd,window,recall,0.6923076923076923
+benchmark_airquality,student_kd,window,f1,0.8181818181818182
+benchmark_airquality,student_kd,window,auprc,0.9261545013555795
+benchmark_airquality,student_kd,window,roc_auc,0.9685314685314684
+benchmark_airquality,student_kd,window,confusion_matrix,"[[88, 0], [8, 18]]"
+benchmark_airquality,student_kd,window,threshold,0.12878787878787878
+benchmark_airquality,student_kd,window,n_true_anomalies,26
+benchmark_airquality,student_kd,window,n_predicted_anomalies,18
+benchmark_airquality,student_kd,window,has_ground_truth,True
+benchmark_airquality,student_kd,window,warning,
+benchmark_airquality,student_kd,step,precision,0.7912087912087912
+benchmark_airquality,student_kd,step,recall,0.8
+benchmark_airquality,student_kd,step,f1,0.7955801104972375
+benchmark_airquality,student_kd,step,auprc,0.8631284672490972
+benchmark_airquality,student_kd,step,roc_auc,0.947835278200575
+benchmark_airquality,student_kd,step,confusion_matrix,"[[1295, 19], [18, 72]]"
+benchmark_airquality,student_kd,step,threshold,0.7524242424242424
+benchmark_airquality,student_kd,step,n_true_anomalies,90
+benchmark_airquality,student_kd,step,n_predicted_anomalies,91
+benchmark_airquality,student_kd,step,has_ground_truth,True
+benchmark_airquality,student_kd,step,warning,
+benchmark_airquality,student_kd,event,event_precision,1.0
+benchmark_airquality,student_kd,event,event_recall,0.8333333333333334
+benchmark_airquality,student_kd,event,event_f1,0.9090909090909091
+benchmark_airquality,student_kd,event,true_events,6.0
+benchmark_airquality,student_kd,event,predicted_events,6.0
+benchmark_airquality,student_kd,threshold,window_threshold,0.12878787878787878
+benchmark_airquality,student_kd,threshold,step_threshold,0.7524242424242424

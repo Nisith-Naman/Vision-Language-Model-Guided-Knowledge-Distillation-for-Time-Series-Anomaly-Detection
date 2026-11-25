@@ -1,0 +1,10 @@
+type,start,end,length,channels
+real_event,1409,1649,240,"TP2,TP3,H1,DV_pressure,Reservoirs,Motor_current,Oil_temperature,COMP,DV_eletric,Towers,MPG,LPS,Pressure_switch,Oil_level,Caudal_impulse"
+spike,2590,2592,2,"TP2,Reservoirs,Towers,MPG,Oil_level"
+level_shift,2698,2803,105,"H1,Motor_current,Oil_temperature,COMP,DV_eletric,Pressure_switch"
+real_event,159,399,240,"TP2,TP3,H1,DV_pressure,Reservoirs,Motor_current,Oil_temperature,COMP,DV_eletric,Towers,MPG,LPS,Pressure_switch,Oil_level,Caudal_impulse"
+drift,1161,1281,120,"TP2,Reservoirs,Oil_temperature,MPG"
+noise_burst,1977,2090,113,DV_pressure
+oscillation,4023,4085,62,"Motor_current,Oil_temperature,COMP,DV_eletric,MPG,LPS,Pressure_switch"
+real_event,3441,3681,240,"TP2,TP3,H1,DV_pressure,Reservoirs,Motor_current,Oil_temperature,COMP,DV_eletric,Towers,MPG,LPS,Pressure_switch,Oil_level,Caudal_impulse"
+flatline,2162,2282,120,"TP2,Reservoirs,Motor_current,DV_eletric,Pressure_switch"

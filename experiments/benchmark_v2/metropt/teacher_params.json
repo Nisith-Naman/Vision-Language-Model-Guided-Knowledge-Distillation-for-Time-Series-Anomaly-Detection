@@ -1,0 +1,18 @@
+{
+  "teacher": "coop_mv",
+  "model_name": "openai/clip-vit-base-patch32",
+  "render_style": "heatmap",
+  "render_clip": 4.0,
+  "localization": {
+    "alpha": 0.0,
+    "k": 1,
+    "threshold": 0.12475094571709634,
+    "min_len": 1
+  },
+  "views": [
+    "heatmap",
+    "spectrogram"
+  ],
+  "context_file": "clip_coop_mv.npz",
+  "note": "Threshold, smoothing and minimum event length were tuned on validation windows only."
+}

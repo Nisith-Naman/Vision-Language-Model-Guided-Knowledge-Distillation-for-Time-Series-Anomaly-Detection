@@ -1,0 +1,21 @@
+{
+  "render_style": "heatmap",
+  "train_windows_scored": 8000,
+  "train_windows_total": 12000,
+  "probe": {
+    "C": 0.1,
+    "cv_auprc": {
+      "0.003": 0.9609258194501489,
+      "0.01": 0.967337153459665,
+      "0.03": 0.9709413808103723,
+      "0.1": 0.9722702262622074,
+      "0.3": 0.971814651262346,
+      "1.0": 0.9718279568604238
+    }
+  },
+  "train_oof_window_auprc_probe": 0.9722702262622074,
+  "train_window_auprc_zeroshot": 0.8166999280134233,
+  "train_window_prevalence": 0.651375,
+  "pos_weight": 1.0,
+  "downsample": 2
+}

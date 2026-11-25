@@ -1,0 +1,10 @@
+type,start,end,length,channels
+real_event,3868,3979,111,"ankle_x,ankle_y,ankle_z,thigh_x,thigh_y,thigh_z,trunk_x,trunk_y,trunk_z"
+spike,3564,3567,3,"trunk_y,trunk_z"
+level_shift,7745,8001,256,thigh_z
+real_event,4793,4872,79,"ankle_x,ankle_y,ankle_z,thigh_x,thigh_y,thigh_z,trunk_x,trunk_y,trunk_z"
+drift,5102,5358,256,"ankle_z,trunk_x"
+noise_burst,2115,2327,212,"ankle_x,thigh_y,trunk_z"
+oscillation,5969,6225,256,"ankle_x,thigh_z,trunk_x"
+real_event,8489,8706,217,"ankle_x,ankle_y,ankle_z,thigh_x,thigh_y,thigh_z,trunk_x,trunk_y,trunk_z"
+flatline,2488,2744,256,"ankle_y,ankle_z,thigh_z"

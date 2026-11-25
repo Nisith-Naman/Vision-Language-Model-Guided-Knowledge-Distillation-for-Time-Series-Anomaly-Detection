@@ -1,0 +1,30 @@
+dataset,mode,level,metric,value
+benchmark_daphnet,student_baseline,window,precision,0.1276595744680851
+benchmark_daphnet,student_baseline,window,recall,1.0
+benchmark_daphnet,student_baseline,window,f1,0.22641509433962265
+benchmark_daphnet,student_baseline,window,auprc,0.15425891462308977
+benchmark_daphnet,student_baseline,window,roc_auc,0.6125508130081301
+benchmark_daphnet,student_baseline,window,confusion_matrix,"[[0, 164], [0, 24]]"
+benchmark_daphnet,student_baseline,window,threshold,0.01
+benchmark_daphnet,student_baseline,window,n_true_anomalies,24
+benchmark_daphnet,student_baseline,window,n_predicted_anomalies,188
+benchmark_daphnet,student_baseline,window,has_ground_truth,True
+benchmark_daphnet,student_baseline,window,warning,
+benchmark_daphnet,student_baseline,step,precision,0.006709212894779905
+benchmark_daphnet,student_baseline,step,recall,1.0
+benchmark_daphnet,student_baseline,step,f1,0.013328998699609884
+benchmark_daphnet,student_baseline,step,auprc,0.005210580430773069
+benchmark_daphnet,student_baseline,step,roc_auc,0.3889580905693735
+benchmark_daphnet,student_baseline,step,confusion_matrix,"[[0, 6070], [0, 41]]"
+benchmark_daphnet,student_baseline,step,threshold,0.45545454545454545
+benchmark_daphnet,student_baseline,step,n_true_anomalies,41
+benchmark_daphnet,student_baseline,step,n_predicted_anomalies,6111
+benchmark_daphnet,student_baseline,step,has_ground_truth,True
+benchmark_daphnet,student_baseline,step,warning,Severe class imbalance detected (148.0:1 normal-to-anomaly). AUPRC (0.0052) and F1 (0.0133) are more reliable than ROC-AUC (0.3890).
+benchmark_daphnet,student_baseline,event,event_precision,1.0
+benchmark_daphnet,student_baseline,event,event_recall,1.0
+benchmark_daphnet,student_baseline,event,event_f1,1.0
+benchmark_daphnet,student_baseline,event,true_events,41.0
+benchmark_daphnet,student_baseline,event,predicted_events,1.0
+benchmark_daphnet,student_baseline,threshold,window_threshold,0.01
+benchmark_daphnet,student_baseline,threshold,step_threshold,0.45545454545454545

@@ -1,0 +1,77 @@
+{
+  "dataset": "creditcard",
+  "split_method": "chronological 60%/20%/20%",
+  "window_length": 64,
+  "stride": 32,
+  "features": [
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8",
+    "V9",
+    "V10",
+    "V11",
+    "V12",
+    "V13",
+    "V14",
+    "V15",
+    "V16",
+    "V17",
+    "V18",
+    "V19",
+    "V20",
+    "V21",
+    "V22",
+    "V23",
+    "V24",
+    "V25",
+    "V26",
+    "V27",
+    "V28",
+    "Amount"
+  ],
+  "processed_sha256": "bdacb432ecb9dff17c28331730d62d38cf9eff06f5ca1e6abc17c674ad84b4bd",
+  "partitions": {
+    "train": {
+      "groups": [
+        "creditcard_train"
+      ],
+      "n_groups": 1,
+      "timesteps": 170884,
+      "anomalous_timesteps": 360,
+      "point_prevalence": 0.0021066922590763323,
+      "windows": 5340,
+      "anomalous_windows": 525,
+      "window_prevalence": 0.09831460674157304
+    },
+    "val": {
+      "groups": [
+        "creditcard_val"
+      ],
+      "n_groups": 1,
+      "timesteps": 56962,
+      "anomalous_timesteps": 57,
+      "point_prevalence": 0.0010006671114076052,
+      "windows": 1780,
+      "anomalous_windows": 104,
+      "window_prevalence": 0.058426966292134834
+    },
+    "test": {
+      "groups": [
+        "creditcard_test"
+      ],
+      "n_groups": 1,
+      "timesteps": 56961,
+      "anomalous_timesteps": 75,
+      "point_prevalence": 0.0013166903670932743,
+      "windows": 1780,
+      "anomalous_windows": 131,
+      "window_prevalence": 0.07359550561797752
+    }
+  },
+  "synthetic_labels": false
+}

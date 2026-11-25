@@ -1,0 +1,49 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.98\linewidth,height=2.35cm,
+  xmin=1,xmax=20,ymin=0,ymax=2.2,
+  title={Air Quality KD},title style={font=\small},
+  xlabel={Epoch},ylabel={Loss},
+  xtick={1,5,10,15,20},ytick={0,1,2},
+  tick label style={font=\scriptsize},label style={font=\scriptsize},
+  legend to name=losslegend,
+  legend style={font=\scriptsize,legend columns=2,draw=none}
+]
+\addplot[blue!70!black,thick] coordinates {(1,2.038)(2,1.310)(3,1.027)(4,.858)(5,.754)(6,.645)(7,.598)(8,.556)(9,.520)(10,.493)(11,.467)(12,.437)(13,.432)(14,.415)(15,.402)(16,.397)(17,.383)(18,.386)(19,.372)(20,.369)};
+\addlegendentry{Train}
+\addplot[orange!85!black,thick] coordinates {(1,1.448)(2,1.590)(3,1.432)(4,1.565)(5,1.639)(6,1.389)(7,1.452)(8,1.365)(9,1.253)(10,1.106)(11,1.189)(12,1.112)(13,1.140)(14,1.150)(15,1.025)(16,1.102)(17,1.219)(18,1.095)(19,1.167)(20,1.162)};
+\addlegendentry{Validation}
+\end{axis}
+\end{tikzpicture}
+\vspace{-1mm}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.98\linewidth,height=2.35cm,
+  xmin=1,xmax=20,ymin=0,ymax=1.8,
+  title={Credit Card KD},title style={font=\small},
+  xlabel={Epoch},ylabel={Loss},
+  xtick={1,5,10,15,20},ytick={0,.5,1,1.5},
+  tick label style={font=\scriptsize},label style={font=\scriptsize}
+]
+\addplot[blue!70!black,thick] coordinates {(1,1.575)(2,1.181)(3,1.108)(4,.984)(5,.903)(6,.864)(7,.855)(8,.856)(9,.837)(10,.835)(11,.817)(12,.817)(13,.793)(14,.771)(15,.765)(16,.757)(17,.749)(18,.747)(19,.744)(20,.745)};
+\addplot[orange!85!black,thick] coordinates {(1,.442)(2,.329)(3,.311)(4,.201)(5,.238)(6,.188)(7,.184)(8,.204)(9,.184)(10,.178)(11,.209)(12,.194)(13,.204)(14,.205)(15,.172)(16,.170)(17,.169)(18,.163)(19,.167)(20,.161)};
+\end{axis}
+\end{tikzpicture}
+\vspace{-1mm}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.98\linewidth,height=2.35cm,
+  xmin=1,xmax=20,ymin=0,ymax=3.0,
+  title={Daphnet KD},title style={font=\small},
+  xlabel={Epoch},ylabel={Loss},
+  xtick={1,5,10,15,20},ytick={0,1,2,3},
+  tick label style={font=\scriptsize},label style={font=\scriptsize}
+]
+\addplot[blue!70!black,thick] coordinates {(1,2.456)(2,2.369)(3,2.389)(4,2.271)(5,2.316)(6,2.181)(7,2.199)(8,2.116)(9,1.973)(10,2.022)(11,1.852)(12,1.793)(13,1.910)};
+\addplot[orange!85!black,thick] coordinates {(1,2.169)(2,2.154)(3,2.140)(4,2.127)(5,2.115)(6,2.104)(7,2.094)(8,2.086)(9,2.087)(10,2.109)(11,2.155)(12,2.181)(13,2.208)};
+\end{axis}
+\end{tikzpicture}
+
+\begin{center}
+\pgfplotslegendfromname{losslegend}
+\end{center}

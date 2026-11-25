@@ -1,0 +1,94 @@
+{
+  "model_config": {
+    "input_size": 9,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "dropout": 0.3,
+    "seq_len": 128,
+    "bidirectional": false
+  },
+  "feature_names": [
+    "ankle_x",
+    "ankle_y",
+    "ankle_z",
+    "thigh_x",
+    "thigh_y",
+    "thigh_z",
+    "trunk_x",
+    "trunk_y",
+    "trunk_z"
+  ],
+  "scaler_type": "standard",
+  "window_length": 128,
+  "stride": 32,
+  "threshold": 0.44555555555555554,
+  "normal_label": "0",
+  "anomaly_label": "1",
+  "training_mode": "student_kd",
+  "dataset_name": "benchmark_daphnet",
+  "training_result": {
+    "train_losses": [
+      2.495626926422119,
+      2.4985709190368652,
+      2.4777355194091797,
+      2.46112060546875,
+      2.4604501724243164,
+      2.46156644821167
+    ],
+    "val_losses": [
+      2.1122281352678933,
+      2.1202115615208945,
+      2.1284557580947876,
+      2.137100557486216,
+      2.1414733131726584,
+      2.1459781527519226
+    ],
+    "loc_losses": [
+      1.123882532119751,
+      1.1228549480438232,
+      1.122352123260498,
+      1.1216421127319336,
+      1.1207001209259033,
+      1.120944619178772
+    ],
+    "window_losses": [
+      0.6768427491188049,
+      0.6850762367248535,
+      0.6791936755180359,
+      0.6718535423278809,
+      0.6822995543479919,
+      0.6956369280815125
+    ],
+    "kd_losses": [
+      1.3898036479949951,
+      1.381279706954956,
+      1.3523792028427124,
+      1.335249662399292,
+      1.3149009943008423,
+      1.2899699211120605
+    ],
+    "best_epoch": 1,
+    "best_val_loss": 2.1122281352678933,
+    "training_time_seconds": 2.383946657180786
+  },
+  "created_at": "2026-11-04T14:51:35.743643",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {
+    "col_means": [
+      -83.0414810180664,
+      1005.0354614257812,
+      246.98065185546875,
+      -0.980715274810791,
+      833.0380859375,
+      149.485595703125,
+      45.67503356933594,
+      982.8916625976562,
+      15.803471565246582
+    ]
+  },
+  "time_column": "timestamp",
+  "missing_codes": [],
+  "contextual_threshold_robust_z": 19.732742309570312,
+  "contextual_calibration_normal_rows": 5380,
+  "window_threshold": 0.01
+}

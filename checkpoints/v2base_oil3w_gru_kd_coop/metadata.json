@@ -1,0 +1,141 @@
+{
+  "model_config": {
+    "input_size": 8,
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "seq_len": 120,
+    "bidirectional": true,
+    "conv_channels": 64,
+    "conv_kernel": 5,
+    "downsample": 2,
+    "pooling": "meanmax",
+    "embed_dim": 512
+  },
+  "feature_names": [
+    "P-PDG",
+    "P-TPT",
+    "T-TPT",
+    "P-MON-CKP",
+    "T-JUS-CKP",
+    "P-JUS-CKGL",
+    "T-JUS-CKGL",
+    "QGL"
+  ],
+  "scaler_type": "standard",
+  "window_length": 120,
+  "stride": 30,
+  "threshold": 0.8051852829980128,
+  "normal_label": 0,
+  "anomaly_label": 1,
+  "training_mode": "student_kd",
+  "dataset_name": "benchmark_oil3w",
+  "training_result": {
+    "train_losses": [
+      0.8201360648616831,
+      0.5703172617136164,
+      0.5243032232243964,
+      0.5147202823390352,
+      0.4800679490287253,
+      0.4633396844914619,
+      0.44362389121917967,
+      0.42891050748368525
+    ],
+    "val_losses": [
+      0.5895157075272157,
+      0.5371760744123887,
+      0.3762912777467416,
+      0.44703198358034474,
+      0.49803788831027657,
+      0.4494036177698618,
+      0.618863452751285,
+      0.5316988348196714
+    ],
+    "loc_losses": [
+      0.34481839772234574,
+      0.24626452745275296,
+      0.21923046004264912,
+      0.2140354847812906,
+      0.19536067299703333,
+      0.18744534650381575,
+      0.17594955964608394,
+      0.16794281397411165
+    ],
+    "window_losses": [
+      0.3303913811736919,
+      0.2512563727003463,
+      0.23550061469382427,
+      0.2326557625164377,
+      0.22095753696370632,
+      0.21525432002988268,
+      0.2090989351272583,
+      0.20349333736490696
+    ],
+    "kd_losses": [
+      0.10515501615690424,
+      0.0687887579836744,
+      0.0661655538021884,
+      0.06530821553253113,
+      0.0613999900982735,
+      0.05852420350655596,
+      0.056758167459926706,
+      0.0557802483201661
+    ],
+    "feat_losses": [
+      0.07954252954136501,
+      0.008015208540761725,
+      0.006813194860327751,
+      0.005441638106044302,
+      0.004699495024087423,
+      0.004231629130291812,
+      0.0036344560744993866,
+      0.003388217920338378
+    ],
+    "val_auprc": 0.9850586131742195,
+    "best_epoch": 3,
+    "best_val_loss": 0.3762912777467416,
+    "training_time_seconds": 264.79418659210205,
+    "localization": {
+      "alpha": 0.0,
+      "k": 30,
+      "threshold": 0.8051852829980128,
+      "min_len": 30
+    },
+    "benchmark_variant": "gru_kd_coop",
+    "seed": 1,
+    "distillation": {
+      "mode": "student_kd",
+      "temperature": 2.0,
+      "beta": 1.0,
+      "lambda_kd": 1.0,
+      "lambda_feat": 0.5,
+      "kd_confidence": true,
+      "pos_weight": 1.0,
+      "training": {
+        "epochs": 20,
+        "batch_size": 128,
+        "learning_rate": 0.002,
+        "weight_decay": 0.0001,
+        "early_stopping_patience": 5,
+        "selection_metric": "val_auprc",
+        "optimizer": "adamw"
+      },
+      "student": {
+        "hidden_size": 64,
+        "num_layers": 1,
+        "bidirectional": true,
+        "conv_channels": 64,
+        "conv_kernel": 5,
+        "pooling": "meanmax",
+        "dropout": 0.2
+      }
+    }
+  },
+  "created_at": "2026-11-22T23:02:06",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {},
+  "time_column": null,
+  "missing_codes": [],
+  "contextual_threshold_robust_z": 4.5,
+  "contextual_calibration_normal_rows": 0
+}

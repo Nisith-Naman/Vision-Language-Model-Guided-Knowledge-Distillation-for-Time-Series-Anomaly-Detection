@@ -1,0 +1,64 @@
+{
+  "dataset": "daphnet",
+  "split_method": "subject-disjoint stratified group split (seed 42)",
+  "window_length": 256,
+  "stride": 64,
+  "features": [
+    "ankle_x",
+    "ankle_y",
+    "ankle_z",
+    "thigh_x",
+    "thigh_y",
+    "thigh_z",
+    "trunk_x",
+    "trunk_y",
+    "trunk_z"
+  ],
+  "processed_sha256": "55d9c4dbfcd675c443ef70b00a156183e73b9596168b702ae5e6d53bf22382ca",
+  "partitions": {
+    "train": {
+      "groups": [
+        "S01",
+        "S03",
+        "S05",
+        "S06",
+        "S08",
+        "S09",
+        "S10"
+      ],
+      "n_groups": 7,
+      "timesteps": 814749,
+      "anomalous_timesteps": 93963,
+      "point_prevalence": 0.11532754259287216,
+      "windows": 12672,
+      "anomalous_windows": 2165,
+      "window_prevalence": 0.17084911616161616
+    },
+    "val": {
+      "groups": [
+        "S02"
+      ],
+      "n_groups": 1,
+      "timesteps": 90562,
+      "anomalous_timesteps": 11609,
+      "point_prevalence": 0.12818842340054326,
+      "windows": 1411,
+      "anomalous_windows": 267,
+      "window_prevalence": 0.18922749822820695
+    },
+    "test": {
+      "groups": [
+        "S04",
+        "S07"
+      ],
+      "n_groups": 2,
+      "timesteps": 235524,
+      "anomalous_timesteps": 5213,
+      "point_prevalence": 0.022133625447937365,
+      "windows": 3672,
+      "anomalous_windows": 176,
+      "window_prevalence": 0.04793028322440087
+    }
+  },
+  "synthetic_labels": false
+}

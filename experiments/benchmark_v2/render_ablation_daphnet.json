@@ -1,0 +1,8 @@
+{
+  "description": "Daphnet teacher-rendering ablation. 2000 time-distributed training windows fit the probe; 800 time-distributed validation windows are scored (prevalence 0.19). CLIP ViT-B/32 frozen. Produced by an earlier exploratory run of the render comparison (see report).",
+  "results": [
+    {"render": "global-range heatmap (original v1 rendering)", "zeroshot_auprc": 0.284, "zeroshot_roc_auc": 0.701, "probe_auprc": 0.666, "probe_roc_auc": 0.878},
+    {"render": "per-channel heatmap clipped to [-4, 4] (v2)", "zeroshot_auprc": 0.273, "zeroshot_roc_auc": 0.695, "probe_auprc": 0.780, "probe_roc_auc": 0.930},
+    {"render": "stacked line plot clipped to [-4, 4]", "zeroshot_auprc": 0.160, "zeroshot_roc_auc": 0.452, "probe_auprc": 0.672, "probe_roc_auc": 0.888}
+  ]
+}

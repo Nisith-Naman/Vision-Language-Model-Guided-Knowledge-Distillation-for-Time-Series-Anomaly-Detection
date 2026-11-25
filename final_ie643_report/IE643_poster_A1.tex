@@ -1,0 +1,258 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  IE643 course project poster -- A1 portrait (59.4 cm x 84.1 cm), two columns
+%
+%  Left column : Abstract, Introduction, Datasets, Methodology (pipeline diagram)
+%  Right column: Novelty Assessment, Results (intensive vs. novelty),
+%                Conclusion, References, QR codes
+%
+%  Compile with pdfLaTeX or XeLaTeX (e.g. upload the whole final_ie643_report
+%  folder to Overleaf). Figures are read from figures/:
+%     logo.png, IE643-Logo.pdf      header logos
+%     poster_dataflow.png           pipeline diagram (scripts/make_poster_dataflow.py)
+%     poster_generalisation.png     MetroPT-3 result plot
+%     github_qr.png, demo_qr.png    your QR codes (add them yourself)
+%  A missing figure is drawn as a grey box with its file name.
+%
+%  FITTING THE PAGE: each column is stretched to the page height (\vfill).
+%  If a column runs off the bottom, lower \flowscale (left) or \plotscale
+%  (right); if space is left over, raise them (max 1).
+%
+%  Numbers: experiments/benchmark_v2/summary.csv (base training) and
+%  experiments/benchmark_v2_regularized/summary.csv (regularized training);
+%  GRU rows are the mean of 3 runs.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a1,portrait]{a0poster}
+\usepackage[paperwidth=59.4cm, paperheight=84.1cm, margin=0cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[sfdefault]{roboto}
+\usepackage[svgnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{adjustbox}
+\usepackage{amsmath, amssymb}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{figures/}}
+\urlstyle{same}                                          % links in the poster font
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\-}   % long links may wrap at hyphens
+
+%% ---- the two size knobs (fraction of the column width) ----
+\newcommand{\flowscale}{1.00}   % pipeline diagram, left column
+\newcommand{\plotscale}{0.62}   % MetroPT-3 plot, right column
+
+\definecolor{HeadBlue}{HTML}{1F3864}
+\definecolor{Ours}{HTML}{FDECEC}
+\definecolor{Block}{HTML}{EEF2F7}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{0pt}
+\renewcommand{\arraystretch}{1.15}
+\setlist[itemize]{leftmargin=1.0em, itemsep=3pt, topsep=3pt, parsep=0pt,
+                  label={\color{HeadBlue}\scriptsize$\blacksquare$}}
+\setlist[enumerate]{leftmargin=1.4em, itemsep=3pt, topsep=3pt, parsep=0pt,
+                    label={\color{HeadBlue}\bfseries\arabic*.}}
+\newlength{\bodywidth}
+\newlength{\colwidth}
+\newlength{\colheight}
+
+%% section heading
+\newcommand{\sect}[1]{\par\vspace{0.1cm}{\huge\bfseries\color{HeadBlue}#1\par}\vspace{0.15cm}}
+%% figure, or a grey box with the file name if the file is missing
+\newcommand{\fig}[3]{\IfFileExists{figures/#1}{\includegraphics[width=#2]{#1}}%
+  {\fcolorbox{Gray}{WhiteSmoke}{\parbox[c][#3][c]{#2}{\centering\color{DimGray}%
+  {\tiny add\\ \texttt{\detokenize{#1}}}}}}}
+\newcommand{\logobox}[1]{\tikz[baseline=(current bounding box.center)]\node[fill=white, rounded corners=0.45cm, inner sep=0.35cm]
+  {\includegraphics[height=5.6cm, width=5.6cm, keepaspectratio]{#1}};}
+%% small grey caption text
+\newcommand{\figcap}[1]{\par\vspace{0.12cm}{\footnotesize\color{DimGray}#1\par}}
+%% shaded block heading inside a table
+\newcommand{\blockrow}[1]{\rowcolor{Block}\multicolumn{5}{@{}l}{\textit{#1}}\\}
+
+\begin{document}
+\pagestyle{empty}
+%% page-dependent sizes (set here, once the A1 page size is in force)
+\setlength{\bodywidth}{\dimexpr\paperwidth-3cm\relax}
+\setlength{\colwidth}{\dimexpr(\bodywidth-2.2cm)/2\relax}
+\setlength{\colheight}{\dimexpr\paperheight-12.4cm\relax}
+%% everything sits in one page-sized box, so header and columns stay together
+\noindent\begin{minipage}[t][\dimexpr\paperheight-0.4cm\relax][t]{\paperwidth}
+%==============================================================================
+%  HEADER
+%==============================================================================
+\noindent\colorbox{white}{\begin{minipage}[c][8.8cm][c]{\paperwidth}
+\hspace*{1.6cm}\logobox{logo.png}\hfill
+\begin{minipage}[c]{0.66\paperwidth}\centering\color{HeadBlue}
+  {\normalsize IE 643 Course Project\par}\vspace{0.15cm}
+  {\LARGE\bfseries Vision-Language Model Guided Knowledge Distillation\\[0.1cm]
+   for Time-Series Anomaly Detection\par}\vspace{0.2cm}
+  {\normalsize Team Ballad\par}\vspace{0.05cm}
+  {\normalsize\color{Black} Nisith Naman Parida (24B2218)\par}\vspace{0.05cm}
+  {\small\color{DimGray} 24b2218@iitb.ac.in\par}
+\end{minipage}\hfill
+\logobox{IE643-Logo.pdf}\hspace*{1.6cm}
+\end{minipage}}\par
+\noindent{\color{HeadBlue}\rule{\paperwidth}{6pt}}\par
+\vspace{0.3cm}
+
+%==============================================================================
+%  BODY: two columns separated by a blue rule
+%==============================================================================
+\noindent\hspace*{1.5cm}%
+%------------------------------------------------------------------ LEFT COLUMN
+\begin{minipage}[t][\colheight][s]{\colwidth}
+\small
+\sect{Abstract}
+Anomaly detection in multivariate time-series data is challenging due to complex temporal patterns and highly
+imbalanced class distributions, where anomalous instances are significantly underrepresented. A pretrained
+Vision-Language Model serves as a frozen teacher, providing anomaly-related guidance from visual representations
+of time-series data. This knowledge is transferred to a trainable GRU-based student model through knowledge
+distillation, enabling it to learn temporal dependencies from numerical sequences. The approach aims to achieve
+effective anomaly detection and temporal localization with reduced computational requirements during inference.
+
+\vfill
+\sect{Introduction}
+\begin{itemize}
+  \item \textbf{Goal}: find \emph{whether} and \emph{where} sensors behave unlike normal (fraud, freezing of
+        gait, oil-well faults, compressor failures).
+  \item \textbf{Hard}: faults are rare (5--7\% of windows in three datasets) and costly to label.
+  \item \textbf{Why CLIP}: many faults are visible shapes; CLIP knows irregular pictures from 400 million
+        image--caption pairs, but has 151 million parameters.
+  \item \textbf{Idea}: frozen CLIP teaches a small GRU (95,000 parameters) in training; only the GRU is deployed.
+  \item \textbf{Question}: does the teacher help \emph{beyond} the same GRU trained on labels alone?
+\end{itemize}
+
+\vfill
+\sect{Datasets}
+{\footnotesize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l l c c l c@{}}
+\toprule
+\textbf{Dataset} & \textbf{Measures} & \textbf{Sensors} & \textbf{Window} & \textbf{Test kept apart by} & \textbf{Faulty} \\
+\midrule
+Credit Card  & card payments         & 29 & 64  & time (60/20/20\%)  & 7.4\%  \\
+Daphnet FoG  & walking, 64 Hz        & 9  & 256 & other patients     & 4.8\%  \\
+Petrobras 3W & oil wells, 10 s       & 8  & 120 & other well events  & 62.0\% \\
+MetroPT-3    & air compressor, 1 min & 15 & 120 & other failures     & 6.2\%  \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}\par}
+\figcap{Window = time steps per piece; Faulty = share of faulty test windows. MetroPT-3: failure 1 trains,
+2 validates, 3--4 test. Air Quality was dropped: its labels proved artificial.}
+
+\vfill
+\sect{Methodology}
+{\centering\fig{poster_dataflow.png}{\flowscale\linewidth}{34cm}\par}
+\figcap{Each card shows what the data looks like at that step (toy: 4 sensors, 24-step windows). Orange:
+frozen CLIP teacher, training only; red: the deployed GRU student.}
+\end{minipage}%
+\hfill{\color{HeadBlue}\vrule width 5pt}\hfill
+%------------------------------------------------------------------ RIGHT COLUMN
+\begin{minipage}[t][\colheight][s]{\colwidth}
+\small
+\sect{Novelty Assessment}
+\begin{enumerate}
+  \item \textbf{Label audit}: Air Quality's faults were synthetic, so it was dropped; 3W and MetroPT-3 added.
+  \item \textbf{Teacher input}: fixed $\pm4$ colour scale (v1 pictures were nearly flat) + a spectrogram.
+  \item \textbf{Learned prompts}: 14 prompt words learned for frozen CLIP, cross-fitted (no self-scoring).
+  \item \textbf{Confidence-weighted distillation} of CLIP's opinion and its picture summary.
+  \item \textbf{Controlled benchmark}: 5 teachers $\times$ 7 students $\times$ 3 runs + 2 baselines.
+  \item \textbf{Fair baseline}: regularized training so the labels-only GRU cannot memorise.
+  \item \textbf{Checks}: metrics recomputed, leak and overfitting audits, unlabelled test with 12 hidden
+        failures.
+\end{enumerate}
+
+\vfill
+\sect{Results}
+{\footnotesize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+\textbf{Test window AUPRC} & \textbf{Credit Card} & \textbf{Daphnet} & \textbf{3W} & \textbf{MetroPT-3} \\
+\midrule
+\blockrow{Primary assessment (v1): saved runs, global colour range, hand-written prompts}
+\multicolumn{5}{@{}l}{Daphnet: CLIP teacher 0.029 $\cdot$ GRU, labels only 0.126 $\cdot$ GRU + KD 0.058} \\
+\multicolumn{5}{@{}l}{Credit Card: GRU + KD 0.660 $\cdot$ 3W and MetroPT-3 were not evaluated in v1} \\
+\blockrow{Intensive assessment: original pipeline re-run on the final splits}
+Random guess (= share of faults)        & 0.074 & 0.048 & 0.620 & 0.062 \\
+Isolation Forest                        & 0.128 & 0.057 & 0.787 & 0.575 \\
+Gradient-boosted trees                  & 0.767 & 0.350 & 0.998 & 0.702 \\
+CLIP, hand-written prompts (teacher)    & 0.079 & 0.123 & 0.771 & 0.037 \\
+GRU, labels only                        & \textbf{0.823} & \textbf{0.627} & \textbf{0.985} & \textbf{0.751} \\
+GRU + KD from that teacher              & 0.817 & 0.609 & 0.982 & 0.424 \\
+\blockrow{Novelty assessment: adapted teacher and new distillation}
+CLIP, learned prompts                   & 0.137 & 0.531 & 0.974 & 0.989 \\
+CLIP, learned prompts + spectrogram (teacher) & 0.124 & 0.401 & 0.971 & 0.998 \\
+GRU + KD, learned-prompt teacher        & 0.804 & 0.587 & 0.978 & \textbf{0.893} \\
+\quad + confidence weighting            & 0.801 & 0.592 & 0.978 & 0.876 \\
+GRU, labels only, regularized           & \textbf{0.828} & \textbf{0.659} & \textbf{0.985} & 0.812 \\
+\rowcolor{Ours}\textbf{GRU + KD, confidence-weighted, regularized (ours)} & 0.805 & 0.655 & 0.983 & 0.892 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}\par}
+\figcap{Table 1. Test window AUPRC (0--1, higher is better; random guessing scores the share of faults).
+v1: single saved runs on the v1 splits. Other GRU rows: mean of 3 runs; bold = best GRU in each block.}
+\vspace{0.3cm}
+{\footnotesize
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}l cc cc cc@{}}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Window AUPRC}} & \multicolumn{2}{c}{\textbf{Time-step AUPRC}} & \multicolumn{2}{c}{\textbf{Event F1}} \\
+\textbf{Regularized: labels only vs.\ ours} & labels & ours & labels & ours & labels & ours \\
+\midrule
+Credit Card & 0.828 & 0.805 & 0.777 & 0.776 & 0.798 & 0.792 \\
+Daphnet     & 0.659 & 0.655 & 0.535 & 0.549 & 0.290 & 0.232 \\
+3W          & 0.985 & 0.983 & 0.979 & 0.986 & 0.945 & 0.949 \\
+\rowcolor{Ours}MetroPT-3 & 0.812 & \textbf{0.892} & 0.821 & \textbf{0.882} & 0.577 & \textbf{0.820} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}\par}
+\figcap{Table 2. Same network, split and seeds, with and without the teacher; no point adjustment.}
+\begin{itemize}
+  \item \textbf{The teacher had to be adapted}: the v1 teacher scored 0.029 on Daphnet and hand-written prompts
+        0.037 on MetroPT-3 (distilling them hurts: 0.424); learned prompts reach 0.531 and 0.989.
+  \item \textbf{MetroPT-3, one training failure}: the adapted teacher beats labels only on all 3 runs
+        (+0.080 window, +0.061 time-step AUPRC, event F1 0.577 $\rightarrow$ 0.820).
+  \item \textbf{New unlabelled data}, 12 hidden failures: both GRUs find 10; ours places them better
+        (event F1 0.546 vs.\ 0.424).
+  \item \textbf{Elsewhere no change} (within 0.025). Caveat: only two MetroPT-3 test failures.
+\end{itemize}
+
+\vfill
+\sect{Conclusion and Future Work}
+\begin{itemize}
+  \item A frozen picture-and-text model \textbf{can} teach a sensor detector once its pictures and prompts are
+        adapted; it helps \textbf{where labelled faults are scarcest}.
+  \item The deployed GRU is \textbf{1/1500 of CLIP's size} and \textbf{330$\times$ faster} on a CPU.
+  \item \textbf{Future}: leave-one-failure/patient-out tests; distil on unlabelled data; one prompt per fault type.
+\end{itemize}
+
+\vfill
+\sect{References}
+{\scriptsize
+\begin{enumerate}[label={[\arabic*]}, leftmargin=2.0em, itemsep=2pt, topsep=0pt]
+\item A.\ Radford et al. Learning transferable visual models from natural language supervision. ICML, 2021.
+\item K.\ Zhou, J.\ Yang, C.\ C.\ Loy, Z.\ Liu. Learning to prompt for vision-language models. IJCV, 2022.
+\item G.\ Hinton, O.\ Vinyals, J.\ Dean. Distilling the knowledge in a neural network. NIPS Workshop, 2015.
+\item A.\ Romero et al. FitNets: hints for thin deep nets. ICLR, 2015.
+\item S.\ Kim et al. Towards a rigorous evaluation of time-series anomaly detection. AAAI, 2022.
+\item F.\ T.\ Liu, K.\ M.\ Ting, Z.-H.\ Zhou. Isolation Forest. IEEE ICDM, 2008.
+\item M.\ B\"achlin et al. Wearable assistant for Parkinson's disease patients with the freezing of gait symptom. IEEE T-ITB, 2010.
+\item R.\ E.\ V.\ Vargas et al. A realistic and public dataset with rare undesirable real events in oil wells. J.\ Pet.\ Sci.\ Eng., 2019.
+\item B.\ Veloso, R.\ P.\ Ribeiro, J.\ Gama, P.\ M.\ Pereira. The MetroPT dataset for predictive maintenance. Scientific Data, 2022.
+\item ULB Machine Learning Group. Credit Card Fraud Detection dataset. Kaggle.
+\end{enumerate}
+}
+\vspace{0.25cm}
+\begin{minipage}[c]{0.16\linewidth}\fig{github_qr.png}{\linewidth}{\linewidth}\end{minipage}\hspace{0.5cm}%
+\begin{minipage}[c]{0.29\linewidth}\textbf{Code:}\\ GitHub repository\end{minipage}\hfill
+\begin{minipage}[c]{0.16\linewidth}\fig{demo_qr.png}{\linewidth}{\linewidth}\end{minipage}\hspace{0.5cm}%
+\begin{minipage}[c]{0.29\linewidth}\textbf{Demo:}\\ video of the app\end{minipage}
+\par\vspace{0.12cm}
+{\scriptsize\raggedright
+\href{https://github.com/Nisith-Naman/Vision-Language-Model-Guided-Knowledge-Distillation-for-Time-Series-Anomaly-Detection}{\nolinkurl{github.com/Nisith-Naman/Vision-Language-Model-Guided-Knowledge-Distillation-for-Time-Series-Anomaly-Detection}}\par
+\href{https://drive.google.com/file/d/1IPWDaN2lwlS4eK7C8tyMCtFCTHwT89Ao/view?usp=sharing}{\nolinkurl{drive.google.com/file/d/1IPWDaN2lwlS4eK7C8tyMCtFCTHwT89Ao/view?usp=sharing}}\par}
+\end{minipage}\hspace*{1.5cm}
+\end{minipage}
+\end{document}

@@ -1,0 +1,13 @@
+dataset,level,metric,variant,mean_delta_vs_gt,wins,seeds
+daphnet,event,event_f1,gru_kd_zeroshot,-0.06552999852859552,1,3
+daphnet,event,event_f1,gru_kd_probe,-0.020976422103199693,1,3
+daphnet,event,event_f1,gru_kd_full,-0.040144209642350805,1,3
+daphnet,event,event_f1,gru_teacher_only,0.09605844301358167,2,3
+daphnet,point,auprc,gru_kd_zeroshot,0.013279746524359703,3,3
+daphnet,point,auprc,gru_kd_probe,0.004147054556567127,2,3
+daphnet,point,auprc,gru_kd_full,0.005200217527170259,2,3
+daphnet,point,auprc,gru_teacher_only,-0.027094162095187075,1,3
+daphnet,window,auprc,gru_kd_zeroshot,-0.008337538022627785,1,3
+daphnet,window,auprc,gru_kd_probe,-0.04887087668513512,1,3
+daphnet,window,auprc,gru_kd_full,-0.04336065514152062,1,3
+daphnet,window,auprc,gru_teacher_only,-0.17743076837079066,0,3

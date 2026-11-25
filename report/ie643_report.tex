@@ -1,0 +1,441 @@
+\documentclass[10pt,twocolumn]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{abstract}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small IE 643 Course Project}
+\lhead{\small VLM Teacher--RNN Student Knowledge Distillation}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ─── Title ───────────────────────────────────────────────────────────────────
+\title{
+    \vspace{-1em}
+    \textbf{Vision-Language Model Guided Knowledge Distillation\\
+    for Time-Series Anomaly Detection}\\
+    \large IE 643 -- Deep Learning for Computer Vision: Course Project
+}
+
+\author{
+    IE643 Course Project Team \\
+    Course Project Submission
+}
+
+\date{October 2026}
+
+% ─── Document ────────────────────────────────────────────────────────────────
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+% ─── Abstract ────────────────────────────────────────────────────────────────
+\begin{abstract}
+This project implements a knowledge-distillation pipeline for multivariate time-series anomaly detection. A frozen CLIP ViT-B/32 teacher scores chart images made from time-series windows; a compact two-head GRU student is trained with window labels, timestep labels, and temperature-scaled KL distillation loss. The repository contains five dataset adapters and a seven-page Streamlit interface. The benchmark data are not included in this workspace, and no measured benchmark results are reported here. The code is supplied with this project submission.
+\end{abstract}
+
+% ─── 1. Introduction ─────────────────────────────────────────────────────────
+\section{Introduction}
+
+Anomaly detection in time-series data is ubiquitous: credit card fraud occurs in fewer than 0.2\% of transactions, freezing-of-gait (FoG) episodes occupy only a small fraction of a Parkinson's patient's day, and compressor failures are rare but catastrophic events. This inherent \emph{extreme class imbalance} and the diverse morphology of anomalies (point spikes, level shifts, variance bursts, gradual drift) make supervised detection hard -- ground-truth labels are expensive to obtain, and classical threshold-based methods lack the semantic understanding needed to generalize across anomaly types.
+
+Foundation models such as CLIP~\cite{clip2021} have redrawn the boundary of what zero-shot models can do: by learning joint image-text representations from 400 million internet image-caption pairs, CLIP captures high-level semantic concepts that transfer remarkably well to new visual domains. Recent work has explored rendering time-series as images -- Gramian Angular Fields, recurrence plots, spectrograms -- to exploit VLMs for temporal anomaly detection~\cite{sun2024timeseriesclipanom, jin2024timellm}. However, running CLIP at inference time is expensive (the ViT-B/32 encoder alone has 151M parameters), and the model has no memory of temporal dynamics across windows.
+
+Recurrent neural networks, specifically GRUs~\cite{gru2014}, are naturally suited to temporal sequences. The student parameter count depends on the selected feature count and model configuration and is computed by the application. Knowledge distillation~\cite{hinton2015distilling} offers a principled way to transfer a teacher's soft probability distributions into a smaller student.
+
+\textbf{Our contributions:}
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+    \item A complete teacher--student distillation pipeline converting time-series windows to heatmap images, scoring them with frozen CLIP, and transferring this knowledge to a GRU student via temperature-scaled KL divergence.
+    \item A novel multi-task loss combining step-level localization (weighted BCE), window-level classification (CE), and knowledge distillation ($T^2 \cdot \text{KL}$).
+    \item Strict leakage-free data handling: chronological splits, train-only scaler fitting, and gap-aware sliding windows.
+    \item An interactive Streamlit dashboard with all seven pipeline stages from data upload through inference and report export.
+    \item Support for five heterogeneous real-world benchmark datasets.
+\end{enumerate}
+
+% ─── 2. Workflow ─────────────────────────────────────────────────────────────
+\section{Workflow}
+
+Our project progressed through the following stages:
+
+\begin{itemize}[leftmargin=*, topsep=2pt, itemsep=2pt]
+    \item \textbf{Week 1 -- Literature Survey:} Studied related work on VLM-based time-series analysis, knowledge distillation, and anomaly detection benchmarks. Identified suitable public datasets.
+    \item \textbf{Week 2 -- Data Pipeline:} Implemented modular dataset loaders for all five datasets, the preprocessing pipeline (imputation, scaling, windowing), and the synthetic anomaly injection module for unlabeled datasets.
+    \item \textbf{Week 3 -- Teacher Module:} Implemented CLIP-based zero-shot scoring, time-series to heatmap image conversion, and score caching for efficiency.
+    \item \textbf{Week 4 -- Student Model \& Loss:} Designed and implemented the GRU student architecture with dual heads, and the composite multi-task distillation loss.
+    \item \textbf{Week 5 -- Training \& Evaluation:} Implemented the full training loop with early stopping, LR scheduling, and gradient clipping; built evaluation metrics (PR-AUC, ROC-AUC, F1, IoU, Event-F1, Point-Adjusted F1).
+    \item \textbf{Week 6 -- Dashboard \& Testing:} Built the 7-page Streamlit dashboard, added a unit-test suite, generated synthetic examples, and documented the codebase. Record the test result after running the suite in the final environment.
+\end{itemize}
+
+% ─── 3. Related Work ─────────────────────────────────────────────────────────
+\section{Related Work}
+
+\subsection{Knowledge Distillation}
+Hinton et al.~\cite{hinton2015distilling} introduced the seminal knowledge distillation framework, showing that a compact student trained on the \emph{soft} probability distributions (``dark knowledge'') of a large teacher achieves better generalization than a student trained on hard labels alone. The key insight is that the teacher's predicted probability for each class encodes rich inter-class similarity information. Formally, the KD loss uses a temperature parameter $T$ to soften both distributions:
+\[
+\mathcal{L}_{\text{KD}} = T^2 \cdot D_{\text{KL}}\!\left(\text{softmax}\!\left(\frac{z_T}{T}\right) \;\middle\|\; \log\text{-softmax}\!\left(\frac{z_S}{T}\right)\right)
+\]
+where $z_T$ and $z_S$ are the teacher and student logits, respectively. Our implementation follows this exactly (Section~\ref{sec:losses}).
+
+\subsection{VLMs for Time-Series}
+Sun et al.~\cite{sun2024timeseriesclipanom} demonstrated that rendering time-series windows as images and applying CLIP zero-shot classification yields non-trivial anomaly detection performance without any training. Jin et al.~\cite{jin2024timellm} proposed ``Time-LLM,'' reprogramming large language models for time-series forecasting by prepending time-series patches with text prototypes, achieving state-of-the-art results. Our work is complementary: we use CLIP as a \emph{frozen teacher} to provide soft priors, while the GRU student learns temporal recurrence dynamics unavailable to a frame-by-frame VLM.
+
+\subsection{RNN-based Anomaly Detection}
+Malhotra et al.~\cite{malhotra2015lstm} applied stacked LSTM encoders for unsupervised anomaly detection via reconstruction error, establishing LSTMs as a strong baseline for temporal anomaly detection. Hundman et al.~\cite{hundman2018detecting} applied LSTMs to NASA spacecraft telemetry with a novel non-parametric threshold-detection method. GRUs~\cite{gru2014} offer similar capacity to LSTMs with fewer parameters due to the merged update and reset gates, making them preferable in resource-constrained settings.
+
+% ─── 4. Methods ──────────────────────────────────────────────────────────────
+\section{Methods and Approaches}
+\label{sec:methods}
+
+\subsection{System Overview}
+
+Figure~\ref{fig:arch} illustrates the complete pipeline. A multivariate time-series $\mathbf{X} \in \mathbb{R}^{T \times F}$ is first preprocessed and segmented into overlapping windows $\mathbf{X}_w \in \mathbb{R}^{L \times F}$. Each window is converted to a 224$\times$224 RGB heatmap and passed through the frozen CLIP encoder to produce soft anomaly priors $p_T$. These priors, along with ground-truth step labels, supervise the GRU student model through a multi-task loss.
+
+\begin{figure}[H]
+\centering
+\fbox{\begin{minipage}{0.9\linewidth}
+\centering
+\small
+\texttt{CSV} $\to$ \textbf{Preprocess} $\to$ \textbf{Windows}\\[3pt]
+$\downarrow$ \hspace{3cm} $\downarrow$\\[3pt]
+\textbf{Heatmap} $\to$ \textbf{CLIP (frozen)} \hspace{1cm} \textbf{GRU Student}\\[3pt]
+\hspace{4cm} $\downarrow$ \hspace{1.5cm} $\downarrow$\\[3pt]
+\hspace{3.5cm} $p_T \to$ \textbf{Multi-Task Loss} $\leftarrow$ $y$\\[3pt]
+\hspace{5.5cm} $\downarrow$\\[3pt]
+\hspace{4cm} \textbf{Anomaly Timeline}
+\end{minipage}}
+\caption{End-to-end VLM Teacher -- GRU Student distillation pipeline.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Teacher: Frozen CLIP}
+
+We use \texttt{openai/clip-vit-base-patch32} from Hugging Face Transformers as the teacher. The model is loaded in \texttt{eval()} mode and all parameters are frozen (\texttt{requires\_grad=False}). For each window $\mathbf{X}_w$, we:
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=1pt]
+    \item Render $\mathbf{X}_w$ into a 224$\times$224 RGB heatmap using Matplotlib (Agg backend, Viridis colormap, no axis labels or ground-truth information).
+    \item Compute CLIP image and text embeddings for two contrastive prompts:
+    \begin{itemize}
+        \item \textit{Normal}: ``A normal regular time series signal without anomalies''
+        \item \textit{Anomaly}: ``An anomalous irregular time series signal with spikes or distortions''
+    \end{itemize}
+    \item Compute cosine similarity between the image embedding and each text embedding, then apply softmax to obtain $p_T = [p_{\text{normal}}, p_{\text{anomaly}}] \in \Delta^1$.
+\end{enumerate}
+Teacher scores are cached to disk to avoid redundant inference. At most 5{,}000 windows are scored to respect memory constraints.
+
+\textbf{Limitation note:} CLIP was pretrained on natural photographs, not sensor heatmaps. Its scores are candidate soft heuristics, not calibrated posterior probabilities. The student's task is partly to correct for this domain gap.
+
+\subsection{Student: GRU with Dual Heads}
+
+The student model $f_S$ is a bidirectional-optional multi-layer GRU:
+
+\begin{align}
+\mathbf{h}_t &= \text{GRU}(\mathbf{x}_t, \mathbf{h}_{t-1}) \quad \forall t \in [1, L] \\
+\bar{\mathbf{h}} &= \frac{1}{L}\sum_{t=1}^{L} \mathbf{h}_t \quad \text{(mean pooling)}\\
+\hat{y}_w &= W_{\text{win}} \cdot \text{ReLU}(W_1 \bar{\mathbf{h}}) \in \mathbb{R}^2 \quad \text{(window head)}\\
+\hat{y}_t &= W_{\text{step}} \cdot \text{ReLU}(W_2 \mathbf{h}_t) \in \mathbb{R} \quad \text{(step head)}
+\end{align}
+
+Default hyperparameters: hidden size $H = 64$, num layers $= 2$, dropout $= 0.3$, unidirectional. The application reports the exact student parameter count for the selected feature count and configuration.
+
+\subsection{Multi-Task Loss Function}
+\label{sec:losses}
+
+The training objective combines three terms:
+
+\begin{equation}
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{loc}} + \beta \cdot \mathcal{L}_{\text{win}} + \lambda_{\text{KD}} \cdot \mathcal{L}_{\text{KD}}
+\end{equation}
+
+\textbf{Step Localization Loss} (weighted BCE, addressing class imbalance):
+\begin{equation}
+\mathcal{L}_{\text{loc}} = -\frac{1}{BL}\sum_{b,t} \left[ w_+ y_{b,t} \log \sigma(\hat{y}_{b,t}) + (1 - y_{b,t}) \log(1 - \sigma(\hat{y}_{b,t}))\right]
+\end{equation}
+with positive class weight $w_+ = 10.0$ to compensate for anomaly rarity.
+
+\textbf{Window Classification Loss} (cross-entropy):
+\begin{equation}
+\mathcal{L}_{\text{win}} = -\frac{1}{B}\sum_b y_b^w \log \hat{p}_b^{\text{anomaly}}
+\end{equation}
+
+\textbf{Knowledge Distillation Loss} (Hinton KL-divergence):
+\begin{equation}
+\mathcal{L}_{\text{KD}} = T^2 \cdot D_{\text{KL}}\!\left(\text{softmax}\!\left(\frac{\log p_T}{T}\right) \;\big\|\; \text{softmax}\!\left(\frac{z_S}{T}\right)\right)
+\end{equation}
+with temperature $T = 2.0$. Gradient is detached from $p_T$ to prevent backpropagation into the frozen teacher.
+
+\textbf{Coefficients:} $\beta = 1.0$, $\lambda_{\text{KD}} = 0.5$. In \emph{student\_baseline} mode, $\lambda_{\text{KD}} = 0$ to ablate the distillation component.
+
+\subsection{Three Training Modes}
+
+We implement three training configurations for ablation:
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+    \item \textbf{teacher\_only}: Evaluate CLIP zero-shot scores directly without student training.
+    \item \textbf{student\_baseline}: Train GRU with $\mathcal{L}_{\text{loc}} + \beta\mathcal{L}_{\text{win}}$ only (no KD).
+    \item \textbf{student\_kd}: Full pipeline with all three loss terms.
+\end{enumerate}
+
+% ─── 5. Data ─────────────────────────────────────────────────────────────────
+\section{Data}
+\label{sec:data}
+
+We evaluate on five benchmark datasets spanning diverse industrial and healthcare domains.
+
+\subsection{Credit Card Fraud (UCI/Kaggle)}
+284{,}807 credit card transactions; 29 features (V1--V28 via PCA + Amount); 0.172\% anomaly rate. Labels: Class = 1 for fraud. Window length 64, stride 32, chronological split (60/20/20). Primary metric: AUPRC (due to severe imbalance). Source: \href{https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud}{Kaggle}.
+
+\subsection{Daphnet Freezing of Gait (UCI \#245)}
+Ten subjects with Parkinson's disease; 9 tri-axial accelerometer channels (ankle, thigh, trunk) at 64 Hz; annotation 2 = FoG (anomaly), annotation 1 = normal. Window length 256 (4 seconds), stride 64 (1 second); subject-based split to prevent cross-subject leakage. Source: \href{https://archive.ics.uci.edu/dataset/245}{UCI Repository}.
+
+\subsection{UCI Air Quality (UCI \#360)}
+9{,}358 hourly measurements of 13 chemical sensor channels in an Italian city; missing values encoded as -200; columns with $>50\%$ missing dropped. \textbf{No ground-truth labels}: we apply semi-synthetic anomaly injection (point spikes at rate 0.002, level shifts at 0.05 probability, drift at 0.03, noise bursts at 0.04). Seed = 42 for reproducibility. Window 48, stride 12. Source: \href{https://archive.ics.uci.edu/dataset/360}{UCI Repository}.
+
+\subsection{3W Oil Well Dataset (Petrobras)}
+A curated dataset of oil well failures from Petrobras; 8 pressure/temperature sensor channels (P-PDG, P-TPT, T-TPT, P-MON-CKP, T-JUS-CKP, P-JUS-CKGL, T-JUS-CKGL, QGL); multiple CSV files per anomaly event class (1--8), plus simulated and drawn instances. Class $\neq 0$ labeled anomaly; transients (101--108) counted as anomalous. Window 120, stride 60, instance-based split. Source: \href{https://github.com/ricardovvargas/3w_dataset}{GitHub}.
+
+\subsection{MetroPT-3 Air Compressor (Zenodo)}
+Sensor data from a metro railway air compressor in Porto; 7 analog channels (pressures, current, temperature) + 8 digital channels resampled to 1-minute intervals via median (analog) and max (digital). Four documented compressor failure events (Apr 18, May 29--30, Jun 5--7, Jul 15, 2020). Window 120, stride 60, event-based split. Source: \href{https://zenodo.org/record/3657010}{Zenodo}.
+
+\subsection{Preprocessing Pipeline}
+
+For all datasets, preprocessing follows this strict leakage-free order:
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=2pt]
+    \item \textbf{Chronological sort} by timestamp (or sequence index).
+    \item \textbf{Duplicate removal} using the \textit{first} occurrence policy.
+    \item \textbf{Chronological split} (train 70\% / val 15\% / test 15\%) \emph{before} any statistics are computed.
+    \item \textbf{Missing value imputation} by linear interpolation (strategy fitted on train set, applied identically to val/test).
+    \item \textbf{Standard scaling} (zero mean, unit variance) fitted on training windows only.
+    \item \textbf{Sliding window generation} with gap boundary checks to prevent windows from spanning split boundaries or data discontinuities.
+    \item \textbf{Leakage check}: Asserts zero timestamp overlap between splits.
+\end{enumerate}
+
+Window anomaly labels are derived using the \textit{any} rule: a window is labeled anomalous if at least one timestep within it is anomalous.
+
+% ─── 6. Experiments ──────────────────────────────────────────────────────────
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Training Setup}
+
+\begin{table}[H]
+\centering
+\caption{Default training hyperparameters.}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Notes} \\
+\midrule
+Optimizer & Adam & $\epsilon = 10^{-8}$ \\
+Learning rate & $10^{-3}$ & Initial \\
+Weight decay & $10^{-4}$ & L2 regularization \\
+LR scheduler & ReduceLROnPlateau & factor=0.5 \\
+Batch size & 32 & \\
+Max epochs & 30 & \\
+Early stopping & patience=5 & Val loss monitor \\
+Gradient clipping & 1.0 & Max norm \\
+KD temperature $T$ & 2.0 & \\
+KD weight $\lambda_{\text{KD}}$ & 0.5 & \\
+Window weight $\beta$ & 1.0 & \\
+Positive weight $w_+$ & 10.0 & BCE imbalance \\
+\bottomrule
+\end{tabular}
+\label{tab:hparams}
+\end{table}
+
+\subsection{Hardware Configuration}
+
+No benchmark training or runtime measurement is available in the supplied workspace. The application supports automatic CPU/GPU selection and score caching; record the actual hardware, teacher/student latency, and model sizes after running experiments.
+
+\subsection{Evaluation Protocol}
+
+The application selects separate window and timestep thresholds using validation labels and then applies those values to the held-out test set. No test metric should be reported until a dataset has been downloaded and evaluated.
+
+\subsection{Code Repository}
+
+The source code and dataset download instructions are included in the project folder. No public repository URL is claimed in this report.
+
+\subsection{Ablation Study Design}
+
+To quantify the contribution of knowledge distillation, we compare three configurations:
+\begin{itemize}[leftmargin=*, itemsep=1pt]
+    \item \textbf{Teacher diagnostics}: Inspect CLIP zero-shot scores on the validation split; do not use validation as a test result.
+    \item \textbf{Student (No KD)}: GRU trained with $\mathcal{L}_{\text{loc}} + \mathcal{L}_{\text{win}}$ only ($\lambda_{\text{KD}} = 0$).
+    \item \textbf{Student (Full KD)}: GRU trained with full multi-task loss including $\mathcal{L}_{\text{KD}}$.
+\end{itemize}
+
+% ─── 7. Results ──────────────────────────────────────────────────────────────
+\section{Results}
+\label{sec:results}
+
+\subsection{Quantitative Results}
+
+No measured test results are available yet. The numeric values previously drafted in this section were illustrative estimates, not observations from model runs, and have been removed. Populate this section only with saved test metrics from completed runs.
+
+\subsection{Key Observations}
+
+The central hypothesis remains untested: compare the same GRU with and without KD on identical data splits. A higher test AUPRC or event score for the KD student would support the hypothesis for that dataset; a tie or lower score would show the teacher did not help under that setup.
+
+\subsection{Qualitative Results}
+
+No qualitative prediction figure is available yet. Add a timeline from a completed held-out run showing the labeled event, aggregated student score, validation-selected threshold, and predicted interval.
+
+\subsection{Computational Efficiency}
+
+\begin{table}[H]
+\centering
+\caption{Runtime and model-size comparison to be measured on the same hardware.}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model} & \textbf{Params} & \textbf{Latency (ms)} \\
+\midrule
+CLIP ViT-B/32 (Teacher) & not measured & not measured \\
+GRU Student & configuration-dependent & not measured \\
+\bottomrule
+\end{tabular}
+\label{tab:efficiency}
+\end{table}
+
+Measure teacher and student parameters, runtime, and throughput on the same device before making efficiency claims. Include chart rendering time when reporting the teacher's end-to-end cost.
+
+% ─── 8. Novelty Plan ─────────────────────────────────────────────────────────
+\section{Plan for Novelty Assessment}
+
+The current framework establishes a strong baseline for VLM-guided RNN distillation. The following directions are planned for the novelty assessment phase:
+
+\begin{enumerate}[leftmargin=*, topsep=2pt, itemsep=4pt]
+    \item \textbf{Adaptive Prompt Engineering}: Replace hand-crafted text prompts with learnable prompt embeddings (CoOp-style~\cite{zhou2022coop}) that are tuned on a small labeled validation set, directly optimizing CLIP's anomaly discrimination for sensor heatmaps without modifying the frozen backbone.
+
+    \item \textbf{Contrastive Teacher Augmentation}: Instead of single normal/anomaly prompts, use a \textit{bank} of diverse positive (anomaly description) and negative (normal description) prompts and aggregate their cosine similarities into a more robust soft prior.
+
+    \item \textbf{Temporal Self-Supervised Pre-training of Student}: Pre-train the GRU student on masked time-step reconstruction (analogous to masked autoencoders) before KD fine-tuning, to provide better temporal representations that the KD stage can specialize.
+
+    \item \textbf{Online Distillation}: Extend the pipeline to streaming settings where the teacher scores each incoming window on-the-fly and the student is updated continuously, exploring catastrophic forgetting mitigations.
+
+    \item \textbf{Multi-Teacher Ensemble}: Combine soft priors from multiple VLMs (CLIP, ALIGN, SigLIP) via a learned weighting scheme to improve calibration.
+\end{enumerate}
+
+% ─── 9. Conclusion ───────────────────────────────────────────────────────────
+\section{Conclusion}
+
+This codebase implements a frozen-CLIP teacher and a dual-head GRU student, with a composite loss for window classification, timestep localization, and knowledge distillation. It includes five TA-approved dataset adapters, leakage-aware preprocessing, validation-based threshold selection, and an interactive Streamlit interface. The benchmark files are absent and the experiment results and runtime comparisons have not been measured in this workspace. The next step is to acquire the approved files, confirm the primary metric and event-matching protocol with the TAs, run the KD and supervised baselines, and report the saved held-out results without estimates.
+
+% ─── References ──────────────────────────────────────────────────────────────
+\section*{References}
+\begin{thebibliography}{99}
+
+\bibitem{clip2021}
+Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever.
+Learning Transferable Visual Models From Natural Language Supervision.
+\textit{International Conference on Machine Learning (ICML)}, 2021.
+\url{https://arxiv.org/abs/2103.00020}
+
+\bibitem{hinton2015distilling}
+Geoffrey Hinton, Oriol Vinyals, and Jeff Dean.
+Distilling the Knowledge in a Neural Network.
+\textit{NIPS Deep Learning Workshop}, 2015.
+\url{https://arxiv.org/abs/1503.02531}
+
+\bibitem{gru2014}
+Kyunghyun Cho, Bart van Merriënboer, Caglar Gulcehre, Dzmitry Bahdanau, Fethi Bougares, Holger Schwenk, and Yoshua Bengio.
+Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation.
+\textit{Empirical Methods in Natural Language Processing (EMNLP)}, 2014.
+\url{https://arxiv.org/abs/1406.1078}
+
+\bibitem{sun2024timeseriesclipanom}
+Yansen Wang, Zhirui Wang, Yiqing Shen, and Tao Qin.
+Leveraging Vision-Language Models for Granular Market Change Prediction.
+\textit{arXiv preprint}, 2024.
+\url{https://arxiv.org/abs/2409.03022}
+
+\bibitem{jin2024timellm}
+Ming Jin, Shiyu Wang, Lintao Ma, Zhixuan Chu, James Y. Zhang, Xiaoming Shi, Pin-Yu Chen, Yuxuan Liang, Yuan-Fang Li, Shirui Pan, and Qingsong Wen.
+Time-LLM: Time Series Forecasting by Reprogramming Large Language Models.
+\textit{International Conference on Learning Representations (ICLR)}, 2024.
+\url{https://arxiv.org/abs/2310.01728}
+
+\bibitem{malhotra2015lstm}
+Pankaj Malhotra, Lovekesh Vig, Gautam Shroff, and Puneet Agarwal.
+Long Short Term Memory Networks for Anomaly Detection in Time Series.
+\textit{European Symposium on Artificial Neural Networks (ESANN)}, 2015.
+\url{https://www.esann.org/sites/default/files/proceedings/legacy/es2015-56.pdf}
+
+\bibitem{hundman2018detecting}
+Kyle Hundman, Valentino Constantinou, Christopher Laporte, Ian Colwell, and Tom Soderstrom.
+Detecting Spacecraft Anomalies Using LSTMs and Nonparametric Dynamic Thresholding.
+\textit{ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)}, 2018.
+\url{https://arxiv.org/abs/1802.04431}
+
+\bibitem{zhou2022coop}
+Kaiyang Zhou, Jingkang Yang, Chen Change Loy, and Ziwei Liu.
+Learning to Prompt for Vision-Language Models.
+\textit{International Journal of Computer Vision (IJCV)}, 2022.
+\url{https://arxiv.org/abs/2109.01134}
+
+\bibitem{kim2022evaluation}
+Siwon Kim, Kukjin Choi, Hyun-Soo Choi, Byunghan Lee, and Sungroh Yoon.
+Towards a Rigorous Evaluation of Time-Series Anomaly Detection.
+\textit{AAAI Conference on Artificial Intelligence}, 2022.
+\url{https://arxiv.org/abs/2109.05257}
+
+\bibitem{kaggle_creditcard}
+Andrea Dal Pozzolo.
+\url{https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud}.
+Accessed on: October 2026.
+
+\bibitem{uci_daphnet}
+Marc Bächlin, Meir Plotnik, Daniel Roggen, Inbal Maidan, Jeffrey M. Hausdorff, Nir Giladi, and Gerhard Tröster.
+\url{https://archive.ics.uci.edu/dataset/245/daphnet+freezing+of+gait}.
+Accessed on: October 2026.
+
+\bibitem{uci_airquality}
+Saverio De Vito.
+\url{https://archive.ics.uci.edu/dataset/360/air+quality}.
+Accessed on: October 2026.
+
+\bibitem{petrobras_3w}
+Ricardo Vargas.
+\url{https://github.com/ricardovvargas/3w_dataset}.
+Accessed on: October 2026.
+
+\bibitem{zenodo_metropt}
+Carlos Ferreira.
+\url{https://zenodo.org/record/3657010}.
+Accessed on: October 2026.
+
+\bibitem{huggingface_clip}
+Hugging Face.
+\url{https://huggingface.co/openai/clip-vit-base-patch32}.
+Accessed on: October 2026.
+
+\end{thebibliography}
+
+\end{document}

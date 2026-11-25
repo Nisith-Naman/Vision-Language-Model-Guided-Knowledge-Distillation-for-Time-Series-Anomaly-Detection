@@ -1,0 +1,34 @@
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  box/.style={draw=blue!55!black, rounded corners=2pt, fill=blue!5,
+    align=center, minimum height=0.9cm, text width=2.45cm, font=\small},
+  teacher/.style={box, draw=violet!70!black, fill=violet!7},
+  student/.style={box, draw=teal!70!black, fill=teal!7},
+  result/.style={box, draw=orange!75!black, fill=orange!8},
+  arrow/.style={->, thick, draw=black!75}
+]
+\node[box, text width=2.0cm] (raw) at (0,0) {Raw series\\$T\times F$ + labels};
+\node[box, text width=2.35cm] (prep) at (3.0,0) {Split by time / group;\\train-fit imputation\\and standardization};
+\node[box, text width=2.0cm] (window) at (6.0,0) {Overlapping windows\\$L\times F$};
+\node[teacher] (image) at (9.2,1.55) {Heatmap render\\$224\times224$};
+\node[teacher] (clip) at (12.4,1.55) {Frozen CLIP\\image + two prompts};
+\node[teacher, text width=2.0cm] (soft) at (15.6,1.55) {Teacher soft target\\$p_T$ per window};
+\node[student] (gru) at (9.2,-1.55) {Two-layer GRU\\64 hidden units};
+\node[student, text width=2.35cm] (heads) at (12.4,-1.55) {Window head\\+ timestep head};
+\node[box, text width=2.15cm] (loss) at (12.4,0) {Supervised labels\\+ KL distillation\\update student};
+\node[result, text width=2.55cm] (csv) at (16.0,-1.55) {Average overlap scores;\\validation threshold;\\CSV + event intervals};
+\draw[arrow] (raw) -- (prep);
+\draw[arrow] (prep) -- (window);
+\draw[arrow] (window.east) -- ++(0.45,0) |- (image.west);
+\draw[arrow] (window.east) -- ++(0.45,0) |- (gru.west);
+\draw[arrow] (image) -- (clip);
+\draw[arrow] (clip) -- (soft);
+\draw[arrow] (soft.south) -- ++(0,-0.42) -| (loss.north);
+\draw[arrow] (gru) -- (heads);
+\draw[arrow] (heads.north) -- (loss.south);
+\draw[arrow] (heads) -- (csv);
+\node[font=\scriptsize, align=center] at (9.2,2.35) {Training only};
+\node[font=\scriptsize, align=center] at (15.9,-2.35) {Student-only inference};
+\end{tikzpicture}%
+}

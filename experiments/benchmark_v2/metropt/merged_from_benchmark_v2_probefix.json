@@ -1,0 +1,9 @@
+{
+  "source": "experiments/benchmark_v2_probefix",
+  "models": [
+    "gru_kd_full",
+    "gru_kd_probe",
+    "gru_teacher_only"
+  ],
+  "rows": 27
+}

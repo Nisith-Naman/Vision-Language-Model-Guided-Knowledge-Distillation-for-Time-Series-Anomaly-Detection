@@ -1,0 +1,142 @@
+{
+  "model_config": {
+    "input_size": 15,
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "seq_len": 120,
+    "bidirectional": true,
+    "conv_channels": 64,
+    "conv_kernel": 5,
+    "downsample": 2,
+    "pooling": "meanmax",
+    "embed_dim": 512
+  },
+  "feature_names": [
+    "TP2",
+    "TP3",
+    "H1",
+    "DV_pressure",
+    "Reservoirs",
+    "Motor_current",
+    "Oil_temperature",
+    "COMP",
+    "DV_eletric",
+    "Towers",
+    "MPG",
+    "LPS",
+    "Pressure_switch",
+    "Oil_level",
+    "Caudal_impulse"
+  ],
+  "scaler_type": "standard",
+  "window_length": 120,
+  "stride": 30,
+  "threshold": 0.0006551748964539351,
+  "normal_label": 0,
+  "anomaly_label": 1,
+  "training_mode": "student_kd",
+  "dataset_name": "benchmark_metropt",
+  "training_result": {
+    "train_losses": [
+      0.5369641457755978,
+      0.041894615126343876,
+      0.03375809936999129,
+      0.04445446205611985,
+      0.030899019732784767,
+      0.027721096403323688,
+      0.026576274791016027
+    ],
+    "val_losses": [
+      0.24423387658753198,
+      0.007834454470321361,
+      0.014758890352459276,
+      0.01538097724032923,
+      0.07141195811132092,
+      0.1510417672493986,
+      0.0789343224298591
+    ],
+    "loc_losses": [
+      0.14957360986339224,
+      0.007997416140439712,
+      0.0021144223697739596,
+      0.01064542554036052,
+      0.0010172205393770967,
+      0.00015811444984592526,
+      9.349107955795962e-05
+    ],
+    "window_losses": [
+      0.054166707436698186,
+      0.0054283997395102165,
+      0.0056072356671323246,
+      0.006172732177044684,
+      0.004797591538030806,
+      0.005054012545175423,
+      0.005486134773841163
+    ],
+    "kd_losses": [
+      0.27599787126438546,
+      0.021237259873977073,
+      0.020297019590193834,
+      0.022492937663068566,
+      0.02037613033854331,
+      0.01816034574025812,
+      0.016688298290738694
+    ],
+    "feat_losses": [
+      0.11445191001089719,
+      0.014463078678370668,
+      0.011478842665942816,
+      0.010286733776760789,
+      0.009416154478318416,
+      0.008697247446084825,
+      0.008616701260997126
+    ],
+    "val_auprc": 0.9999663467848114,
+    "best_epoch": 2,
+    "best_val_loss": 0.007834454470321361,
+    "training_time_seconds": 99.20679473876953,
+    "localization": {
+      "alpha": 0.0,
+      "k": 30,
+      "threshold": 0.0006551748964539351,
+      "min_len": 30
+    },
+    "benchmark_variant": "gru_kd_full",
+    "seed": 2,
+    "distillation": {
+      "mode": "student_kd",
+      "temperature": 2.0,
+      "beta": 1.0,
+      "lambda_kd": 1.0,
+      "lambda_feat": 0.5,
+      "kd_confidence": false,
+      "pos_weight": 12.066482503198685,
+      "training": {
+        "epochs": 20,
+        "batch_size": 128,
+        "learning_rate": 0.002,
+        "weight_decay": 0.0001,
+        "early_stopping_patience": 5,
+        "selection_metric": "val_auprc",
+        "optimizer": "adamw"
+      },
+      "student": {
+        "hidden_size": 64,
+        "num_layers": 1,
+        "bidirectional": true,
+        "conv_channels": 64,
+        "conv_kernel": 5,
+        "pooling": "meanmax",
+        "dropout": 0.2
+      }
+    }
+  },
+  "created_at": "2026-11-22T23:09:45",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {},
+  "time_column": null,
+  "missing_codes": [],
+  "contextual_threshold_robust_z": 4.5,
+  "contextual_calibration_normal_rows": 0
+}

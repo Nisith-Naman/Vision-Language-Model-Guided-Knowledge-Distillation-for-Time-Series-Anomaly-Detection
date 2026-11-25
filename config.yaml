@@ -1,0 +1,208 @@
+# =============================================================================
+# IE643 – VLM Teacher–RNN Student Knowledge Distillation
+# Central Configuration File
+# =============================================================================
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+paths:
+  data_root: "./data"
+  checkpoint_dir: "./checkpoints"
+  cache_dir: "./cache"
+  logs_dir: "./logs"
+
+# ── General ───────────────────────────────────────────────────────────────────
+seed: 42
+device: "auto"   # "auto" | "cpu" | "cuda"
+
+# ── Preprocessing ─────────────────────────────────────────────────────────────
+preprocessing:
+  scaler: "standard"          # "standard" | "minmax"
+  missing_strategy: "interpolate"   # "interpolate" | "ffill" | "bfill" | "drop"
+  missing_column_threshold: 0.5     # drop columns with > 50% missing
+  duplicate_policy: "first"         # "first" | "last" | "mean"
+
+# ── Windowing ─────────────────────────────────────────────────────────────────
+windowing:
+  window_length: 128
+  stride: 32
+  anomaly_in_window: "any"   # "any" | "majority"
+
+# ── Train/Val/Test split ratios ───────────────────────────────────────────────
+splits:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+# ── Teacher Model ─────────────────────────────────────────────────────────────
+teacher:
+  model_name: "openai/clip-vit-base-patch32"
+  normal_prompt: "A normal regular time series signal without anomalies"
+  anomaly_prompt: "An anomalous irregular time series signal with spikes or distortions"
+  image_mode: "heatmap"       # "heatmap" | "lineplot"
+  image_size: [224, 224]
+  cache_scores: true
+  max_windows_to_score: 5000  # cap to avoid OOM; -1 = no cap
+
+# ── Student Model ─────────────────────────────────────────────────────────────
+student:
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.3
+  bidirectional: false
+
+# ── Training ──────────────────────────────────────────────────────────────────
+training:
+  epochs: 30
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: "adam"           # "adam" | "adamw" | "sgd"
+  weight_decay: 1.0e-4
+  early_stopping_patience: 5
+  gradient_clip: 1.0
+
+# ── Knowledge Distillation ────────────────────────────────────────────────────
+distillation:
+  temperature: 2.0
+  beta: 1.0      # weight for window classification loss
+  lambda_kd: 0.5  # weight for KD loss
+  pos_weight: 10.0  # positive class weight for localization BCE
+
+# ── Threshold Selection ───────────────────────────────────────────────────────
+threshold:
+  objective: "f1"   # "f1" | "precision" | "recall" | "balanced"
+  default: 0.5
+
+# ── Datasets ──────────────────────────────────────────────────────────────────
+datasets:
+
+  creditcard:
+    path: "./data/creditcard.csv"
+    feature_cols: ["V1","V2","V3","V4","V5","V6","V7","V8","V9","V10",
+                   "V11","V12","V13","V14","V15","V16","V17","V18","V19","V20",
+                   "V21","V22","V23","V24","V25","V26","V27","V28","Amount"]
+    time_col: "Time"
+    label_col: "Class"
+    anomaly_value: 1
+    normal_value: 0
+    window_length: 64
+    stride: 32
+    splits: {train: 0.60, val: 0.20, test: 0.20}
+    split_by: "chronological"
+    headline_metric: "auprc"
+
+  daphnet:
+    data_dir: "./data/daphnet"
+    feature_cols: ["ankle_x","ankle_y","ankle_z","thigh_x","thigh_y","thigh_z","trunk_x","trunk_y","trunk_z"]
+    time_col: "time_ms"
+    label_col: "annotation"
+    anomaly_value: 2
+    normal_value: 1
+    drop_value: 0
+    window_length: 256
+    stride: 64
+    sampling_hz: 64
+    split_by: "subject"
+
+  airquality:
+    path: "./data/AirQualityUCI.csv"
+    date_col: "Date"
+    time_col: "Time"
+    missing_code: -200
+    missing_column_threshold: 0.5
+    label_strategy: "semi_synthetic"   # "semi_synthetic" | "dropout"
+    dropout_min_run: 48                # min consecutive -200 rows to label as anomaly
+    synthetic_seed: 42
+    # Labels are SYNTHETIC: events are injected independently into train/val/test
+    # after the chronological split, with magnitudes in training-data std units.
+    # Rates were raised (v2) so the held-out test split has ~10 events instead
+    # of 6, and each event perturbs a random 2..F/2 sensor subset (not all 12).
+    injection:
+      point_spike_rate: 0.003
+      level_shift_prob: 0.15
+      drift_prob: 0.10
+      noise_burst_prob: 0.12
+      feature_subset: true
+    window_length: 48
+    stride: 8
+    split_by: "chronological"
+
+  oil3w:
+    data_dir: "./data/3w"
+    download_url: "https://github.com/ricardovvargas/3w_dataset"
+    transient_is_anomaly: true
+    feature_cols: ["P-PDG","P-TPT","T-TPT","P-MON-CKP","T-JUS-CKP","P-JUS-CKGL","T-JUS-CKGL","QGL"]
+    time_col: "timestamp"
+    label_col: "class"
+    missing_fill_strategy: "ffill"
+    missing_col_threshold: 0.5
+    # v2 benchmark subset: real WELL-* instances first, no hand-drawn files,
+    # at most 30 instances per fault class / 150 normal, averaged to 10 s steps.
+    exclude_drawn: true
+    max_instances_per_class: 30
+    max_normal_instances: 150
+    subset_seed: 42
+    resample_seconds: 10
+    window_length: 120         # 120 x 10 s = 20 minutes
+    stride: 30
+    split_by: "instance"
+    max_train_windows: 20000   # deterministic per-instance sample; 0 = keep every train window
+    max_validation_windows: 5000 # training-time loss subset; full validation retained for threshold tuning
+
+  metropt:
+    path: "./data/MetroPT3(AirCompressor).csv"
+    analog_cols: ["TP2","TP3","H1","DV_pressure","Reservoirs","Motor_current","Oil_temperature"]
+    digital_cols: ["COMP","DV_eletric","Towers","MPG","LPS","Pressure_switch","Oil_level","Caudal_impulse"]
+    time_col: "timestamp"
+    resample_freq: "1min"
+    resample_agg_analog: "median"
+    resample_agg_digital: "max"
+    failure_windows:
+      - {start: "2020-04-18 00:00:00", end: "2020-04-18 23:59:59", event_id: 1}
+      - {start: "2020-05-29 23:30:00", end: "2020-05-30 06:00:00", event_id: 2}
+      - {start: "2020-06-05 10:00:00", end: "2020-06-07 14:30:00", event_id: 3}
+      - {start: "2020-07-15 14:30:00", end: "2020-07-15 19:00:00", event_id: 4}
+    window_length: 120
+    stride: 30
+    split_by: "event"
+
+# ── v2 benchmark (scripts/run_benchmark.py) ──────────────────────────────────
+# One set of hyper-parameters shared by every student variant so the
+# comparison isolates the effect of the teacher signal.
+benchmark:
+  output_dir: "./experiments/benchmark_v2"
+  seeds: [0, 1, 2]
+  teacher:
+    model_name: "openai/clip-vit-base-patch32"
+    render_style: "heatmap"   # chosen by the Daphnet render ablation (probe val AUPRC 0.78 vs 0.67)
+    render_clip: 4.0          # clip standardized values to [-4, 4] before drawing
+    max_train_windows: 8000   # windows embedded by CLIP for KD (time-distributed)
+    probe_folds: 5
+    fold_block: 32            # cross-fitting: interleaved blocks of 32 windows
+    coop_epochs: 12           # prompt-learning epochs on cached CLIP embeddings
+  student:
+    hidden_size: 64
+    num_layers: 1
+    bidirectional: true
+    conv_channels: 64
+    conv_kernel: 5
+    pooling: "meanmax"
+    dropout: 0.2
+  training:
+    epochs: 20
+    batch_size: 128
+    learning_rate: 0.002
+    weight_decay: 1.0e-4
+    early_stopping_patience: 5
+    selection_metric: "val_auprc"
+  distillation:
+    temperature: 2.0
+    beta: 1.0
+    lambda_kd: 1.0
+    lambda_feat: 0.5
+    kd_confidence: false      # set per variant (gru_kd_coop uses true)
+  per_dataset:
+    creditcard: {downsample: 1, max_train_windows: 0}
+    daphnet: {downsample: 4, max_train_windows: 0}
+    airquality: {downsample: 1, max_train_windows: 0}
+    oil3w: {downsample: 2, max_train_windows: 12000}
+    metropt: {downsample: 2, max_train_windows: 0}

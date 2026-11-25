@@ -1,0 +1,130 @@
+{
+  "model_config": {
+    "input_size": 9,
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "seq_len": 256,
+    "bidirectional": true,
+    "conv_channels": 64,
+    "conv_kernel": 5,
+    "downsample": 4,
+    "pooling": "meanmax",
+    "embed_dim": 512
+  },
+  "feature_names": [
+    "ankle_x",
+    "ankle_y",
+    "ankle_z",
+    "thigh_x",
+    "thigh_y",
+    "thigh_z",
+    "trunk_x",
+    "trunk_y",
+    "trunk_z"
+  ],
+  "scaler_type": "standard",
+  "window_length": 256,
+  "stride": 64,
+  "threshold": 0.13235952805903164,
+  "normal_label": 0,
+  "anomaly_label": 1,
+  "training_mode": "student_kd",
+  "dataset_name": "benchmark_daphnet",
+  "training_result": {
+    "train_losses": [
+      0.9055112522057812,
+      0.6189896079024884,
+      0.5742301098024002,
+      0.5265723259160013,
+      0.48086445229222075,
+      0.46388307906160453
+    ],
+    "val_losses": [
+      0.4824214499288549,
+      0.48511623808493215,
+      0.7086797757850339,
+      0.5101422111038119,
+      0.5155707657298384,
+      0.4939113025320694
+    ],
+    "loc_losses": [
+      0.4320689609857521,
+      0.3117995375033581,
+      0.28476973781079956,
+      0.25643436264510105,
+      0.22766650866980503,
+      0.2167720626851525
+    ],
+    "window_losses": [
+      0.29622312055693734,
+      0.2234907920914467,
+      0.21084826048275437,
+      0.19617169275127275,
+      0.18222542867214994,
+      0.1752374479264924
+    ],
+    "kd_losses": [
+      0.14250878583301196,
+      0.07754675242485422,
+      0.0732171745839143,
+      0.06906620281362774,
+      0.06656791153128701,
+      0.06758300109644129
+    ],
+    "feat_losses": [
+      0.06942076362067401,
+      0.012305047127860362,
+      0.010789875213922275,
+      0.009800127876753157,
+      0.00880920457079856,
+      0.008581134406003084
+    ],
+    "val_auprc": 0.8492983468485078,
+    "best_epoch": 1,
+    "best_val_loss": 0.4824214499288549,
+    "training_time_seconds": 245.7611949443817,
+    "localization": {
+      "alpha": 1.0,
+      "k": 64,
+      "threshold": 0.13235952805903164,
+      "min_len": 1
+    },
+    "benchmark_variant": "gru_kd_coop",
+    "seed": 1,
+    "distillation": {
+      "mode": "student_kd",
+      "temperature": 2.0,
+      "beta": 1.0,
+      "lambda_kd": 1.0,
+      "lambda_feat": 0.5,
+      "kd_confidence": true,
+      "pos_weight": 2.762190352397058,
+      "training": {
+        "epochs": 20,
+        "batch_size": 128,
+        "learning_rate": 0.002,
+        "weight_decay": 0.0001,
+        "early_stopping_patience": 5,
+        "selection_metric": "val_auprc",
+        "optimizer": "adamw"
+      },
+      "student": {
+        "hidden_size": 64,
+        "num_layers": 1,
+        "bidirectional": true,
+        "conv_channels": 64,
+        "conv_kernel": 5,
+        "pooling": "meanmax",
+        "dropout": 0.2
+      }
+    }
+  },
+  "created_at": "2026-11-22T23:07:32",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {},
+  "time_column": null,
+  "missing_codes": [],
+  "contextual_threshold_robust_z": 4.5,
+  "contextual_calibration_normal_rows": 0
+}

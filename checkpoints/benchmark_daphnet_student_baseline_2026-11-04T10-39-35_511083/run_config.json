@@ -1,0 +1,65 @@
+{
+  "model": {
+    "input_size": 9,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "dropout": 0.3,
+    "seq_len": 256,
+    "bidirectional": false
+  },
+  "trainer": {
+    "mode": "student_baseline",
+    "device": "auto",
+    "training": {
+      "epochs": 20,
+      "batch_size": 32,
+      "learning_rate": 0.001,
+      "early_stopping_patience": 5,
+      "optimizer": "adamw",
+      "weight_decay": 0.0001,
+      "gradient_clip": 1.0
+    },
+    "distillation": {
+      "temperature": 2.0,
+      "beta": 1.0,
+      "lambda_kd": 0.0,
+      "pos_weight": 10.0
+    }
+  },
+  "dataset": "benchmark_daphnet",
+  "feature_names": [
+    "ankle_x",
+    "ankle_y",
+    "ankle_z",
+    "thigh_x",
+    "thigh_y",
+    "thigh_z",
+    "trunk_x",
+    "trunk_y",
+    "trunk_z"
+  ],
+  "time_column": "timestamp",
+  "missing_strategy": "interpolate",
+  "imputation_stats": {
+    "col_means": [
+      -91.7877197265625,
+      987.31787109375,
+      262.8009948730469,
+      -32.825164794921875,
+      729.93408203125,
+      142.1908416748047,
+      60.512088775634766,
+      945.07177734375,
+      24.698118209838867
+    ]
+  },
+  "missing_codes": [],
+  "window_length": 256,
+  "stride": 64,
+  "contextual_threshold_robust_z": 9.285351753234863,
+  "teacher_model": null,
+  "teacher_image_mode": null,
+  "teacher_training_window_indices": [],
+  "training_validation_windows_used": 762,
+  "training_validation_windows_available": 762
+}

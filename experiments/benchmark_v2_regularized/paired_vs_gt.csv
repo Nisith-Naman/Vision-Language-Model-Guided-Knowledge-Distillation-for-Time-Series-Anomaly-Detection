@@ -1,0 +1,13 @@
+dataset,level,metric,variant,mean_delta_vs_gt,wins,seeds
+creditcard,event,event_f1,gru_kd_coop,-0.00621938912165898,0,3
+creditcard,point,auprc,gru_kd_coop,-0.0009420082927155496,1,3
+creditcard,window,auprc,gru_kd_coop,-0.0224831736785851,0,3
+daphnet,event,event_f1,gru_kd_coop,-0.057372553852616866,1,3
+daphnet,point,auprc,gru_kd_coop,0.014598157161250902,2,3
+daphnet,window,auprc,gru_kd_coop,-0.004045752085165962,1,3
+metropt,event,event_f1,gru_kd_coop,0.2424242424242424,2,3
+metropt,point,auprc,gru_kd_coop,0.06112365612163769,3,3
+metropt,window,auprc,gru_kd_coop,0.07989239919145796,3,3
+oil3w,event,event_f1,gru_kd_coop,0.00438559262088678,1,3
+oil3w,point,auprc,gru_kd_coop,0.006587333105212941,3,3
+oil3w,window,auprc,gru_kd_coop,-0.0020795374533643107,1,3
